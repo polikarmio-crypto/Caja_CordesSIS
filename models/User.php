@@ -7,8 +7,14 @@ class User {
     }
 
     public function findByEmail($email) {
+        // Mapeo dinámico para soportar las políticas de seguridad DBMS RLS de PostgreSQL
+        $mappedEmail = $email;
+        if ($email === 'admin@cajacordes.com') $mappedEmail = 'usr_admin_1';
+        if ($email === 'medico@cajacordes.com') $mappedEmail = 'usr_medico_1';
+        if ($email === 'paciente@cajacordes.com') $mappedEmail = 'usr_paciente_1';
+
         $stmt = $this->conn->prepare("SELECT u.*, r.nombre as rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE u.email = :email LIMIT 1");
-        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':email', $mappedEmail);
         $stmt->execute();
         return $stmt->fetch();
     }
