@@ -59,7 +59,7 @@ class HistoriaClinicaController {
                     $user_id = $_SESSION['user_id'] ?? null;
                     if($user_id) log_activity($user_id, 'Registrar Historia Clinica', 'historia_clinica');
 
-                    header("Location: /pacientes/" . $paciente_id . "/historia?success=1");
+                    header("Location: " . BASE_URL . "/pacientes/" . $paciente_id . "/historia?success=1");
                     exit();
                 }
             } catch (Exception $e) {

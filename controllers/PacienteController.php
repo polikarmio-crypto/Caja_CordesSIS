@@ -23,9 +23,15 @@ class PacienteController {
             $conn->beginTransaction();
 
             try {
-                // Insert User first (Assuming Rol 3 is Paciente)
-                $stmtUser = $conn->prepare("INSERT INTO usuarios (rol_id, email, password_hash) VALUES (3, :email, :password_hash)");
+                // Obtener ID del rol 'Paciente' de forma dinámica para evitar asignaciones erróneas
+                $stmtRol = $conn->prepare("SELECT id FROM roles WHERE nombre = 'Paciente' LIMIT 1");
+                $stmtRol->execute();
+                $rolData = $stmtRol->fetch();
+                $rolIdPaciente = $rolData ? $rolData['id'] : 2;
+
+                $stmtUser = $conn->prepare("INSERT INTO usuarios (rol_id, email, password_hash) VALUES (:rol_id, :email, :password_hash)");
                 $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmtUser->bindParam(':rol_id', $rolIdPaciente, PDO::PARAM_INT);
                 $stmtUser->bindParam(':email', $email);
                 $stmtUser->bindParam(':password_hash', $hash);
                 $stmtUser->execute();
