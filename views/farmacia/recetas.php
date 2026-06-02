@@ -94,7 +94,7 @@
                         <p style="margin: 0; font-weight: bold;"><?= htmlspecialchars($r['nombres'] . ' ' . $r['apellidos']) ?> <small>(CI: <?= htmlspecialchars($r['ci']) ?>)</small></p>
                     </div>
 
-                    <a href="<?= BASE_URL ?>/farmacia/comprobante?id=<?= $r['receta_id'] ?>" target="_blank" class="btn btn-outline" style="width: 100%; text-align: center;">â¬‡ï¸ Descargar Comprobante PDF</a>
+                    <a href="<?= BASE_URL ?>/farmacia/comprobante?id=<?= $r['receta_id'] ?>" target="_blank" class="btn btn-outline" style="width: 100%; text-align: center;">⬇️ Descargar Comprobante PDF</a>
                 </div>
             <?php endforeach; ?>
         </div>

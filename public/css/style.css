@@ -246,6 +246,76 @@ body {
     height: 100vh;
     z-index: 10;
     transition: transform 0.3s ease;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+/* Sidebar scrollbar customization */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: var(--radius-full);
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color);
+}
+
+/* Accordion details styles */
+.sidebar-group {
+    margin-bottom: 6px;
+}
+.sidebar-group[open] .group-title {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+.group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    user-select: none;
+    list-style: none;
+}
+.group-title::-webkit-details-marker {
+    display: none;
+}
+.group-title:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+.group-title::after {
+    content: '❯';
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    color: var(--text-muted);
+}
+.sidebar-group[open] .group-title::after {
+    transform: rotate(90deg);
+}
+.group-items {
+    padding-left: 10px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border-left: 2px dashed rgba(0, 122, 94, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.group-items .nav-link {
+    padding: 10px 16px;
+    margin-bottom: 0;
+    font-size: 0.92rem;
 }
 .sidebar-header {
     padding: 30px;
