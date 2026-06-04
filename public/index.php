@@ -15,6 +15,11 @@ require_once '../config/Database.php';
 require_once '../core/Helpers.php';
 require_once '../core/Router.php';
 
+// Estructuras de Datos Personalizadas
+require_once '../core/structures/CustomNode.php';
+require_once '../core/structures/CustomQueue.php';
+require_once '../core/structures/CustomDoublyLinkedList.php';
+
 // Models
 require_once '../models/User.php';
 require_once '../models/Paciente.php';

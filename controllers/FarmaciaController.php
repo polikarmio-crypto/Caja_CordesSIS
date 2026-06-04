@@ -37,12 +37,15 @@ class FarmaciaController {
     public function recetas() {
         $this->checkAccess();
         $medModel = new Medicamento();
-        $recetas = $medModel->getRecetasPendientes();
-        $despachadas = $medModel->getRecetasDespachadas();
-
-        foreach($recetas as &$r) {
+        
+        $recetasPendientes = $medModel->getRecetasPendientes();
+        $recetaQueue = new CustomQueue();
+        foreach($recetasPendientes as $r) {
             $r['medicamentos'] = $medModel->getDetallesReceta($r['receta_id']);
+            $recetaQueue->enqueue($r);
         }
+
+        $despachadas = $medModel->getRecetasDespachadas();
         foreach($despachadas as &$r) {
             $r['medicamentos'] = $medModel->getDetallesReceta($r['receta_id']);
         }
