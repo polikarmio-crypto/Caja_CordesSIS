@@ -36,6 +36,18 @@ class CitaController {
                     throw new Exception("El médico no trabaja en el horario solicitado ($dia_es a las $hora).");
                 }
 
+                // Validar si hay una ausencia médica registrada en esa fecha/hora
+                $stmtAus = $conn->prepare("
+                    SELECT id, motivo FROM ausencias_medicos
+                    WHERE medico_id = :m 
+                      AND :fecha_hora BETWEEN fecha_inicio AND fecha_fin
+                ");
+                $stmtAus->execute([':m' => $medico_id, ':fecha_hora' => $fecha_hora]);
+                if ($stmtAus->rowCount() > 0) {
+                    $ausencia = $stmtAus->fetch();
+                    throw new Exception("El médico no se encuentra disponible en este horario debido a una ausencia registrada (" . $ausencia['motivo'] . ").");
+                }
+
                 // 2. Validar solapamiento (asumiendo citas de 30 mins)
                 $fecha_hora_fin = date('Y-m-d H:i:s', strtotime($fecha_hora . ' +30 minutes'));
                 $stmtOverlap = $conn->prepare("
@@ -48,7 +60,15 @@ class CitaController {
                     throw new Exception("Solapamiento de agenda: El médico ya tiene una cita reservada a esa hora.");
                 }
 
-                if ($citaModel->create($paciente_id, $medico_id, $fecha_hora, $motivo)) {
+                $modalidad = $_POST['modalidad'] ?? 'presencial';
+                $link_videollamada = null;
+                if ($modalidad === 'virtual') {
+                    $random_code = substr(md5(uniqid(rand(), true)), 0, 9);
+                    $random_meet = substr($random_code, 0, 3) . '-' . substr($random_code, 3, 3) . '-' . substr($random_code, 6, 3);
+                    $link_videollamada = "https://meet.google.com/" . $random_meet;
+                }
+
+                if ($citaModel->create($paciente_id, $medico_id, $fecha_hora, $motivo, $modalidad, $link_videollamada)) {
                     $user_id = $_SESSION['user_id'] ?? null;
                     if($user_id) log_activity($user_id, 'Agendar Cita', 'citas');
 
@@ -129,6 +149,117 @@ class CitaController {
             header('Location: ' . BASE_URL . '/citas?success=Cita+marcada+como+completada');
             exit();
         }
+    }
+
+    // RF-090: Comprobante PDF de cita
+    public function comprobantePdf() {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
+
+        $cita_id = intval($_GET['id'] ?? 0);
+        $conn = Database::getInstance();
+
+        $stmt = $conn->prepare("
+            SELECT c.id, c.fecha_hora, c.motivo, c.estado, c.paciente_id,
+                   p.nombres AS pac_nombres, p.apellidos AS pac_apellidos, p.ci,
+                   up.email AS pac_email,
+                   um.email AS med_email,
+                   e.nombre AS especialidad
+            FROM citas c
+            JOIN pacientes p ON c.paciente_id = p.id
+            JOIN usuarios up ON p.usuario_id = up.id
+            JOIN medicos m ON c.medico_id = m.id
+            JOIN usuarios um ON m.usuario_id = um.id
+            LEFT JOIN medico_especialidades me ON me.medico_id = m.id AND me.principal = TRUE
+            LEFT JOIN especialidades e ON me.especialidad_id = e.id
+            WHERE c.id = :id
+        ");
+        $stmt->execute([':id' => $cita_id]);
+        $cita = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cita) {
+            die('Cita no encontrada.');
+        }
+
+        // Paciente solo puede ver sus propias citas
+        if ($_SESSION['rol_nombre'] === 'Paciente') {
+            $pid = $_SESSION['paciente_id'] ?? 0;
+            if ($cita['paciente_id'] != $pid) {
+                die('Acceso denegado.');
+            }
+        }
+
+        require_once __DIR__ . '/../core/fpdf/fpdf.php';
+
+        $pdf = new FPDF();
+        $pdf->AddPage();
+
+        // Encabezado
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->Cell(0, 12, 'CAJA DE SALUD CORDES', 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(0, 7, 'Comprobante de Cita Medica', 0, 1, 'C');
+        $pdf->Ln(4);
+        $pdf->SetDrawColor(0, 122, 94);
+        $pdf->SetLineWidth(0.8);
+        $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+        $pdf->Ln(6);
+
+        // Numero de cita y estado
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(60, 8, 'Numero de Cita:', 0, 0);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(0, 8, '#' . $cita['id'], 0, 1);
+
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(60, 8, 'Estado:', 0, 0);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(0, 8, ucfirst($cita['estado']), 0, 1);
+
+        // Paciente
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(0, 8, 'Datos del Paciente', 0, 1);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(60, 7, 'Paciente:', 0, 0);
+        $pdf->Cell(0, 7, utf8_decode($cita['pac_nombres'] . ' ' . $cita['pac_apellidos']), 0, 1);
+        $pdf->Cell(60, 7, 'CI:', 0, 0);
+        $pdf->Cell(0, 7, $cita['ci'], 0, 1);
+        $pdf->Cell(60, 7, 'Correo:', 0, 0);
+        $pdf->Cell(0, 7, $cita['pac_email'], 0, 1);
+
+        // Medico
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(0, 8, 'Datos del Medico', 0, 1);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(60, 7, 'Medico:', 0, 0);
+        $pdf->Cell(0, 7, 'Dr(a). ' . utf8_decode($cita['med_email']), 0, 1);
+        $pdf->Cell(60, 7, 'Especialidad:', 0, 0);
+        $pdf->Cell(0, 7, utf8_decode($cita['especialidad'] ?? 'General'), 0, 1);
+
+        // Detalles de la cita
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(0, 8, 'Detalles de la Cita', 0, 1);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(60, 7, 'Fecha y Hora:', 0, 0);
+        $pdf->Cell(0, 7, date('d/m/Y H:i', strtotime($cita['fecha_hora'])), 0, 1);
+        $pdf->Cell(60, 7, 'Motivo:', 0, 0);
+        $pdf->MultiCell(0, 7, utf8_decode($cita['motivo']));
+
+        // Pie
+        $pdf->Ln(6);
+        $pdf->SetFont('Arial', 'I', 9);
+        $pdf->Line(10, $pdf->GetY(), 200, $pdf->GetY());
+        $pdf->Ln(3);
+        $pdf->Cell(0, 6, 'Documento generado el: ' . date('d/m/Y H:i'), 0, 1, 'C');
+        $pdf->Cell(0, 6, 'Este comprobante es valido solo para la cita indicada.', 0, 1, 'C');
+
+        $pdf->Output('D', 'comprobante_cita_' . $cita_id . '.pdf');
+        exit();
     }
 }
 ?>

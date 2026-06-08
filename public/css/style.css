@@ -417,3 +417,51 @@ body {
 .recent-activity {
     animation-delay: 0.2s;
 }
+
+/* RF-105: Accesibilidad - Alto Contraste y Fuente Grande */
+body.alto-contraste {
+    --primary-color: #fef08a !important; /* Amarillo */
+    --primary-light: #fef9c3 !important;
+    --primary-dark: #000000 !important;
+    --secondary-color: #111827 !important; /* Gris muy oscuro */
+    --bg-color: #030712 !important; /* Negro */
+    --text-main: #f9fafb !important; /* Blanco */
+    --text-muted: #e5e7eb !important;
+    --white: #1f2937 !important;
+    --border-color: #fef08a !important;
+}
+
+body.alto-contraste .card, body.alto-contraste .sidebar, body.alto-contraste table {
+    background: #111827 !important;
+    color: #f9fafb !important;
+    border: 1px solid #fef08a !important;
+}
+
+body.alto-contraste .btn {
+    background: #fef08a !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+}
+
+body.alto-contraste .btn-outline {
+    background: transparent !important;
+    color: #fef08a !important;
+    border: 2px solid #fef08a !important;
+}
+
+body.fuente-grande {
+    font-size: 1.15em !important;
+}
+
+body.fuente-grande .nav-link, body.fuente-grande p, body.fuente-grande label, body.fuente-grande td, body.fuente-grande th {
+    font-size: 1.15em !important;
+}
+
+body.fuente-grande h1 {
+    font-size: 2.3em !important;
+}
+
+body.fuente-grande h2 {
+    font-size: 1.8em !important;
+}
+

@@ -78,5 +78,88 @@ class PacienteController {
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         exit();
     }
+
+    // RF-011 / RF-106: Editar perfil del paciente
+    public function edit() {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
+
+        $conn = Database::getInstance();
+        $user_id = $_SESSION['user_id'];
+        $rol = $_SESSION['rol_nombre'] ?? '';
+
+        // El paciente edita su propio perfil; el admin puede editar el de otro pasando ?id=
+        if ($rol === 'Paciente') {
+            $stmt = $conn->prepare("SELECT p.* FROM pacientes p JOIN usuarios u ON p.usuario_id = u.id WHERE u.id = :uid LIMIT 1");
+            $stmt->execute([':uid' => $user_id]);
+        } elseif (in_array($rol, ['Administrativo', 'Directivo'])) {
+            $target_id = intval($_GET['id'] ?? $_POST['paciente_id'] ?? 0);
+            $stmt = $conn->prepare("SELECT * FROM pacientes WHERE id = :id LIMIT 1");
+            $stmt->execute([':id' => $target_id]);
+        } else {
+            header('Location: ' . BASE_URL . '/dashboard');
+            exit;
+        }
+
+        $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$paciente) {
+            header('Location: ' . BASE_URL . '/dashboard');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nombres   = trim($_POST['nombres'] ?? '');
+            $apellidos = trim($_POST['apellidos'] ?? '');
+            $ci        = trim($_POST['ci'] ?? '');
+            $fecha_nac = $_POST['fecha_nac'] ?? '';
+            $telefono  = trim($_POST['telefono'] ?? '');
+
+            try {
+                $conn->beginTransaction();
+
+                // Actualizar datos en tabla pacientes
+                $stmtUpd = $conn->prepare("
+                    UPDATE pacientes
+                       SET nombres = :nombres, apellidos = :apellidos, ci = :ci, fecha_nacimiento = :fn
+                     WHERE id = :id
+                ");
+                $stmtUpd->execute([
+                    ':nombres'   => $nombres,
+                    ':apellidos' => $apellidos,
+                    ':ci'        => $ci,
+                    ':fn'        => $fecha_nac ?: null,
+                    ':id'        => $paciente['id'],
+                ]);
+
+                // Actualizar teléfono principal (borra y reinserta el primero)
+                if (!empty($telefono)) {
+                    $conn->prepare("DELETE FROM paciente_telefonos WHERE paciente_id = :pid")->execute([':pid' => $paciente['id']]);
+                    $stmtTel = $conn->prepare("INSERT INTO paciente_telefonos (paciente_id, telefono) VALUES (:pid, :tel)");
+                    $stmtTel->execute([':pid' => $paciente['id'], ':tel' => $telefono]);
+                }
+
+                log_activity($user_id, 'Actualizar Perfil Paciente', 'pacientes');
+                $conn->commit();
+
+                $success = 'Perfil actualizado correctamente.';
+                // Recargar datos actualizados
+                $stmt2 = $conn->prepare("SELECT * FROM pacientes WHERE id = :id LIMIT 1");
+                $stmt2->execute([':id' => $paciente['id']]);
+                $paciente = $stmt2->fetch(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                $conn->rollBack();
+                $error = 'Error al actualizar: ' . $e->getMessage();
+            }
+        }
+
+        // Obtener teléfono actual para prellenado
+        $stmtTel = $conn->prepare("SELECT telefono FROM paciente_telefonos WHERE paciente_id = :pid LIMIT 1");
+        $stmtTel->execute([':pid' => $paciente['id']]);
+        $telefono_actual = $stmtTel->fetchColumn() ?: '';
+
+        require_once __DIR__ . '/../views/pacientes/edit.php';
+    }
 }
 ?>

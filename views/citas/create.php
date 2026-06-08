@@ -57,6 +57,14 @@ $medicosList = $conn->query("
                     </select>
                 </div>
 
+                 <div class="form-group">
+                    <label>Modalidad de Consulta</label>
+                    <select name="modalidad" required style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid transparent; background: var(--secondary-color);">
+                        <option value="presencial">Presencial (En Consultorio)</option>
+                        <option value="virtual">Virtual (Telemedicina via Google Meet)</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Fecha y Hora</label>
                     <input type="datetime-local" name="fecha_hora" required>

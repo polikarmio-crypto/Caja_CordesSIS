@@ -33,6 +33,7 @@
                         <a href="<?= BASE_URL ?>/horarios" class="nav-link <?= strpos($uri, 'horario') !== false ? 'active' : '' ?>">Horarios Médicos</a>
                         <a href="<?= BASE_URL ?>/hospitalizacion" class="nav-link <?= strpos($uri, 'hospitalizacion') !== false ? 'active' : '' ?>">Hospitalización (Camas)</a>
                         <a href="<?= BASE_URL ?>/laboratorio" class="nav-link <?= strpos($uri, 'laboratorio') !== false ? 'active' : '' ?>">Laboratorio Clínico</a>
+                        <a href="<?= BASE_URL ?>/ausencias" class="nav-link <?= strpos($uri, 'ausencias') !== false ? 'active' : '' ?>">Ausencias Médicas</a>
                     </div>
                 </details>
 
@@ -66,6 +67,7 @@
                         <a href="<?= BASE_URL ?>/pacientes" class="nav-link <?= strpos($uri, 'paciente') !== false ? 'active' : '' ?>">Pacientes</a>
                         <a href="<?= BASE_URL ?>/hospitalizacion" class="nav-link <?= strpos($uri, 'hospitalizacion') !== false ? 'active' : '' ?>">Hospitalización</a>
                         <a href="<?= BASE_URL ?>/laboratorio" class="nav-link <?= strpos($uri, 'laboratorio') !== false ? 'active' : '' ?>">Laboratorio Clínico</a>
+                        <a href="<?= BASE_URL ?>/ausencias" class="nav-link <?= strpos($uri, 'ausencias') !== false ? 'active' : '' ?>">Ausencias / Bloqueos</a>
                     </div>
                 </details>
             <?php endif; ?>
@@ -89,6 +91,7 @@
             
             <?php if ($rol === 'Paciente'): ?>
                 <a href="<?= BASE_URL ?>/dashboard" class="nav-link <?= strpos($uri, 'dashboard') !== false ? 'active' : '' ?>">Mi Portal</a>
+                <a href="<?= BASE_URL ?>/pacientes/edit" class="nav-link <?= strpos($uri, 'pacientes/edit') !== false ? 'active' : '' ?>">✍️ Mi Perfil</a>
             <?php endif; ?>
         </nav>
 
