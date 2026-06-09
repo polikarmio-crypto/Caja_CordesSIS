@@ -40,7 +40,7 @@ class Medicamento {
             JOIN medicos m ON hc.medico_id = m.id
             JOIN usuarios u ON m.usuario_id = u.id
             WHERE r.estado_despacho = 'pendiente'
-            ORDER BY r.fecha_creacion DESC
+            ORDER BY r.fecha_creacion ASC
         ");
         $stmt->execute();
         return $stmt->fetchAll();

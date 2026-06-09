@@ -41,6 +41,7 @@
                         <th style="padding: 12px;">Paciente</th>
                         <th style="padding: 12px;">Médico</th>
                         <th style="padding: 12px;">Estado</th>
+                        <th style="padding: 12px;">Modalidad</th>
                         <th style="padding: 12px;">Motivo</th>
                         <th style="padding: 12px;">Acciones</th>
                     </tr>
@@ -61,17 +62,28 @@
                                     <?= ucfirst(htmlspecialchars($c['estado'])) ?>
                                 </span>
                             </td>
+                            <td style="padding: 12px;">
+                                <?php if (($c['modalidad'] ?? 'presencial') === 'virtual'): ?>
+                                    <span style="color: #0284c7; font-weight: 600;">💻 Virtual</span><br>
+                                    <?php if (!empty($c['link_videollamada']) && $c['estado'] === 'pendiente'): ?>
+                                        <a href="<?= htmlspecialchars($c['link_videollamada']) ?>" target="_blank" style="font-size: 0.85em; color: var(--primary-color); text-decoration: underline;">🎥 Unirse a Meet</a>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span style="color: #4b5563;">🏢 Presencial</span>
+                                <?php endif; ?>
+                            </td>
                             <td style="padding: 12px;"><?= htmlspecialchars($c['motivo']) ?></td>
                             <td style="padding: 12px;">
-                                <?php if($c['estado'] === 'pendiente'): ?>
-                                    <div style="display:flex; gap:5px;">
-                                        <form action="<?= BASE_URL ?>/citas/completar" method="POST" style="display:inline;">
+                                <div style="display:flex; gap:5px; align-items: center;">
+                                    <a href="<?= BASE_URL ?>/citas/comprobante?id=<?= $c['id'] ?>" class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem; border-color: #007a5e; color: #007a5e;" title="Descargar Comprobante PDF">📄 PDF</a>
+                                    <?php if($c['estado'] === 'pendiente'): ?>
+                                        <form action="<?= BASE_URL ?>/citas/completar" method="POST" style="display:inline; margin:0;">
                                             <input type="hidden" name="cita_id" value="<?= $c['id'] ?>">
                                             <button type="submit" class="btn btn-outline" style="color:#16a34a; border-color:#16a34a; padding:6px 10px; font-size:0.8rem;">Completar</button>
                                         </form>
                                         <button class="btn btn-outline" style="color: red; border-color: red; padding:6px 10px; font-size:0.8rem;" onclick="openCancelModal(<?= $c['id'] ?>)">Cancelar</button>
-                                    </div>
-                                <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>

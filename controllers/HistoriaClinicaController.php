@@ -4,7 +4,12 @@ require_once __DIR__ . '/../models/HistoriaClinica.php';
 class HistoriaClinicaController {
     public function show($paciente_id) {
         $hcModel = new HistoriaClinica();
-        $registros = $hcModel->findByPacienteId($paciente_id);
+        $registrosRaw = $hcModel->findByPacienteId($paciente_id);
+        
+        $historialList = new CustomDoublyLinkedList();
+        foreach($registrosRaw as $reg) {
+            $historialList->insertAtEnd($reg);
+        }
         
         require_once __DIR__ . '/../models/Laboratorio.php';
         $labModel = new Laboratorio();
@@ -59,7 +64,7 @@ class HistoriaClinicaController {
                     $user_id = $_SESSION['user_id'] ?? null;
                     if($user_id) log_activity($user_id, 'Registrar Historia Clinica', 'historia_clinica');
 
-                    header("Location: /pacientes/" . $paciente_id . "/historia?success=1");
+                    header("Location: " . BASE_URL . "/pacientes/" . $paciente_id . "/historia?success=1");
                     exit();
                 }
             } catch (Exception $e) {

@@ -51,12 +51,14 @@ class Cita {
         return $stmt->fetch();
     }
 
-    public function create($paciente_id, $medico_id, $fecha_hora, $motivo) {
-        $stmt = $this->conn->prepare("INSERT INTO citas (paciente_id, medico_id, fecha_hora, motivo) VALUES (:paciente_id, :medico_id, :fecha_hora, :motivo)");
+    public function create($paciente_id, $medico_id, $fecha_hora, $motivo, $modalidad = 'presencial', $link_videollamada = null) {
+        $stmt = $this->conn->prepare("INSERT INTO citas (paciente_id, medico_id, fecha_hora, motivo, modalidad, link_videollamada) VALUES (:paciente_id, :medico_id, :fecha_hora, :motivo, :modalidad, :link)");
         $stmt->bindParam(':paciente_id', $paciente_id);
         $stmt->bindParam(':medico_id', $medico_id);
         $stmt->bindParam(':fecha_hora', $fecha_hora);
         $stmt->bindParam(':motivo', $motivo);
+        $stmt->bindParam(':modalidad', $modalidad);
+        $stmt->bindParam(':link', $link_videollamada);
         return $stmt->execute();
     }
 

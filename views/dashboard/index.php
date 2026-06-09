@@ -262,24 +262,179 @@
                 </script>
 
             <?php else: ?>
-                <div class="card recent-activity">
-                    <h3>Actividad Reciente</h3>
-                    <p style="color: var(--text-muted);">El sistema está operativo. Utiliza el menú lateral para navegar por los distintos módulos.</p>
+                <?php if ($rol === 'Médico'): ?>
+                    <?php 
+                    $conn = Database::getInstance();
+                    $stmtM = $conn->prepare("SELECT id FROM medicos WHERE usuario_id = :uid LIMIT 1");
+                    $stmtM->execute([':uid' => $_SESSION['user_id']]);
+                    $medicoData = $stmtM->fetch();
+                    $medico_id = $medicoData ? $medicoData['id'] : null;
 
-                    <?php if ($rol === 'Médico'): ?>
-                        <div style="margin-top: 20px; padding: 15px; background: rgba(0,122,94,0.1); border-left: 4px solid var(--primary-color); border-radius: 6px;">
-                            <strong>Aviso:</strong> Consulta tu agenda para ver las citas pendientes del día.
-                        </div>
-                    <?php elseif (strpos($rol, 'Farmac') !== false): ?>
-                        <div style="margin-top: 20px; padding: 15px; background: rgba(202,138,4,0.1); border-left: 4px solid #ca8a04; border-radius: 6px;">
-                            <strong>Aviso:</strong> Revisa las recetas pendientes de despacho en el módulo de Farmacia.
-                        </div>
-                    <?php elseif ($rol === 'Laboratorista'): ?>
-                        <div style="margin-top: 20px; padding: 15px; background: rgba(0,122,94,0.1); border-left: 4px solid var(--primary-color); border-radius: 6px;">
-                            <strong>Aviso:</strong> Registra los resultados de laboratorio desde el módulo correspondiente.
-                        </div>
-                    <?php endif; ?>
-                </div>
+                    $citas_hoy = [];
+                    if ($medico_id) {
+                        $stmtC = $conn->prepare("
+                            SELECT c.id, c.fecha_hora, c.motivo, c.estado, p.nombres, p.apellidos, p.ci, p.id as pac_id
+                            FROM citas c
+                            JOIN pacientes p ON c.paciente_id = p.id
+                            WHERE c.medico_id = :mid AND DATE(c.fecha_hora) = CURRENT_DATE
+                            ORDER BY c.fecha_hora ASC
+                        ");
+                        $stmtC->execute([':mid' => $medico_id]);
+                        $citas_hoy = $stmtC->fetchAll();
+                    }
+                    ?>
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">📅 Mi Agenda de Hoy</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Listado de citas médicas programadas para la fecha actual.</p>
+                        
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 12px;">Hora</th>
+                                    <th style="padding: 12px;">Paciente</th>
+                                    <th style="padding: 12px;">CI</th>
+                                    <th style="padding: 12px;">Motivo</th>
+                                    <th style="padding: 12px;">Estado</th>
+                                    <th style="padding: 12px; text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($citas_hoy as $c): ?>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px;"><strong><?= date('H:i', strtotime($c['fecha_hora'])) ?></strong></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($c['nombres'] . ' ' . $c['apellidos']) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($c['ci']) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($c['motivo']) ?></td>
+                                        <td style="padding: 12px;">
+                                            <span style="padding: 4px 8px; border-radius: 12px; font-size: 0.85em; 
+                                                <?= $c['estado'] === 'pendiente' ? 'background: #fef08a; color: #854d0e;' : 
+                                                   ($c['estado'] === 'completada' ? 'background: #bbf7d0; color: #166534;' : 'background: #fecaca; color: #991b1b;') ?>">
+                                                <?= ucfirst(htmlspecialchars($c['estado'])) ?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 12px; text-align: right;">
+                                            <a href="<?= BASE_URL ?>/pacientes/<?= $c['pac_id'] ?>/historia" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8em; margin-right: 5px;">📜 Expediente</a>
+                                            <?php if ($c['estado'] === 'pendiente'): ?>
+                                                <form action="<?= BASE_URL ?>/citas/completar" method="POST" style="display: inline;">
+                                                    <input type="hidden" name="cita_id" value="<?= $c['id'] ?>">
+                                                    <button type="submit" class="btn" style="padding: 6px 12px; font-size: 0.8em; background: #16a34a;">✓ Completar</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($citas_hoy)): ?>
+                                    <tr>
+                                        <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">
+                                            No tienes citas programadas para el día de hoy.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                <?php elseif ($rol === 'Laboratorista'): ?>
+                    <?php 
+                    $conn = Database::getInstance();
+                    $labs_pendientes = $conn->query("
+                        SELECT r.id, r.fecha_solicitud, e.nombre as examen_nombre, p.nombres, p.apellidos, p.ci
+                        FROM resultados_laboratorio r
+                        JOIN examenes_catalogo e ON r.examen_id = e.id
+                        JOIN pacientes p ON r.paciente_id = p.id
+                        WHERE r.estado = 'pendiente'
+                        ORDER BY r.fecha_solicitud ASC
+                    ")->fetchAll();
+                    ?>
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">🧪 Exámenes de Laboratorio Pendientes</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Listado de órdenes médicas que requieren ingreso de resultados.</p>
+                        
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 12px;">Fecha Solicitud</th>
+                                    <th style="padding: 12px;">Paciente</th>
+                                    <th style="padding: 12px;">CI</th>
+                                    <th style="padding: 12px;">Examen Requerido</th>
+                                    <th style="padding: 12px; text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($labs_pendientes as $lab): ?>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px;"><?= date('d/m/Y H:i', strtotime($lab['fecha_solicitud'])) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($lab['nombres'] . ' ' . $lab['apellidos']) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($lab['ci']) ?></td>
+                                        <td style="padding: 12px;"><strong><?= htmlspecialchars($lab['examen_nombre']) ?></strong></td>
+                                        <td style="padding: 12px; text-align: right;">
+                                            <a href="<?= BASE_URL ?>/laboratorio/create?paciente_id=<?= $lab['id'] ?>" class="btn" style="padding: 6px 12px; font-size: 0.8em;">✍️ Cargar Resultado</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($labs_pendientes)): ?>
+                                    <tr>
+                                        <td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">
+                                            No hay análisis de laboratorio pendientes de registrar.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                <?php elseif (strpos($rol, 'Farmac') !== false): ?>
+                    <?php 
+                    $conn = Database::getInstance();
+                    $recetas_pendientes = $conn->query("
+                        SELECT r.id, r.fecha_creacion, p.nombres, p.apellidos, p.ci
+                        FROM recetas r
+                        JOIN historia_clinica hc ON r.hc_id = hc.id
+                        JOIN pacientes p ON hc.paciente_id = p.id
+                        WHERE r.estado_despacho = 'pendiente'
+                        ORDER BY r.fecha_creacion ASC
+                    ")->fetchAll();
+                    ?>
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">💊 Recetas Médicas por Despachar</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Listado de prescripciones pendientes de entrega de medicamentos en Farmacia.</p>
+                        
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 12px;">Fecha Receta</th>
+                                    <th style="padding: 12px;">Paciente</th>
+                                    <th style="padding: 12px;">CI</th>
+                                    <th style="padding: 12px; text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($recetas_pendientes as $rec): ?>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px;"><?= date('d/m/Y H:i', strtotime($rec['fecha_creacion'])) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($rec['nombres'] . ' ' . $rec['apellidos']) ?></td>
+                                        <td style="padding: 12px;"><?= htmlspecialchars($rec['ci']) ?></td>
+                                        <td style="padding: 12px; text-align: right;">
+                                            <a href="<?= BASE_URL ?>/farmacia/recetas" class="btn" style="padding: 6px 12px; font-size: 0.8em; background: #ca8a04;">💊 Ir a Despacho</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($recetas_pendientes)): ?>
+                                    <tr>
+                                        <td colspan="4" style="padding: 20px; text-align: center; color: var(--text-muted);">
+                                            No hay recetas pendientes de entrega en este momento.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="card recent-activity">
+                        <h3>Actividad Reciente</h3>
+                        <p style="color: var(--text-muted);">El sistema está operativo. Utiliza el menú lateral para navegar por los distintos módulos.</p>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         <?php endif; ?>
     </main>

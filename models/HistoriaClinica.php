@@ -14,7 +14,7 @@ class HistoriaClinica {
                    (SELECT archivo_ruta FROM hc_archivos WHERE hc_id = hc.id LIMIT 1) as archivo_ruta
             FROM historia_clinica hc
             WHERE hc.paciente_id = :paciente_id 
-            ORDER BY hc.fecha_registro DESC
+            ORDER BY hc.fecha_registro ASC
         ");
         $stmt->bindParam(':paciente_id', $paciente_id);
         $stmt->execute();

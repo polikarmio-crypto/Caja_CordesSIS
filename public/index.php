@@ -15,6 +15,11 @@ require_once '../config/Database.php';
 require_once '../core/Helpers.php';
 require_once '../core/Router.php';
 
+// Estructuras de Datos Personalizadas
+require_once '../core/structures/CustomNode.php';
+require_once '../core/structures/CustomQueue.php';
+require_once '../core/structures/CustomDoublyLinkedList.php';
+
 // Models
 require_once '../models/User.php';
 require_once '../models/Paciente.php';
@@ -24,6 +29,7 @@ require_once '../models/HorarioMedico.php';
 require_once '../models/Hospitalizacion.php';
 require_once '../models/Laboratorio.php';
 require_once '../models/Medicamento.php';
+require_once '../models/AusenciaMedico.php';
 
 // Controllers
 require_once '../controllers/AuthController.php';
@@ -62,6 +68,8 @@ $router->add('GET', '/pacientes', ['PacienteController', 'index']);
 $router->add('GET', '/pacientes/search', ['PacienteController', 'search']);
 $router->add('GET', '/pacientes/create', ['PacienteController', 'create']);
 $router->add('POST', '/pacientes/create', ['PacienteController', 'create']);
+$router->add('GET', '/pacientes/edit', ['PacienteController', 'edit']);   // RF-011
+$router->add('POST', '/pacientes/edit', ['PacienteController', 'edit']);  // RF-011
 
 // Citas
 $router->add('GET', '/citas', ['CitaController', 'index']);
@@ -69,6 +77,7 @@ $router->add('GET', '/citas/create', ['CitaController', 'create']);
 $router->add('POST', '/citas/create', ['CitaController', 'create']);
 $router->add('POST', '/citas/cancel', ['CitaController', 'cancel']);
 $router->add('POST', '/citas/completar', ['CitaController', 'completar']);
+$router->add('GET', '/citas/comprobante', ['CitaController', 'comprobantePdf']); // RF-090
 
 // Reportes
 $router->add('GET', '/reportes/citas', ['ReporteController', 'export_citas']);
@@ -78,6 +87,12 @@ $router->add('GET', '/horarios', ['HorarioMedicoController', 'index']);
 $router->add('GET', '/horarios/create', ['HorarioMedicoController', 'create']);
 $router->add('POST', '/horarios/create', ['HorarioMedicoController', 'create']);
 $router->add('POST', '/horarios/delete', ['HorarioMedicoController', 'delete']);
+
+// Ausencias Médicas (RF-101)
+require_once '../controllers/AusenciaMedicoController.php';
+$router->add('GET', '/ausencias', ['AusenciaMedicoController', 'index']);
+$router->add('GET', '/ausencias/create', ['AusenciaMedicoController', 'create']);
+$router->add('POST', '/ausencias/create', ['AusenciaMedicoController', 'create']);
 
 // Hospitalizacion
 $router->add('GET', '/hospitalizacion', ['HospitalizacionController', 'index']);
