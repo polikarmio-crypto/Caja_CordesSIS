@@ -4,57 +4,46 @@
     <main class="main-content">
         <div class="dashboard-header">
             <div class="welcome-text">
-                <h1>Sucursales</h1>
-                <p>Gestión de las sucursales, clínicas y áreas descentralizadas. Mostrando <?= count($sucursales) ?> de <?= $totalSucursales ?> sucursales activas.</p>
+                <h1>Médicos</h1>
+                <p>Gestión del personal médico y especialidades. Mostrando <?= count($medicos) ?> de <?= $totalMedicos ?> médicos activos.</p>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <a href="<?= BASE_URL ?>/sucursal/bajas" class="btn btn-outline" style="font-size:0.85rem;">🗂 Dados de Baja</a>
-                <a href="<?= BASE_URL ?>/sucursal/create" class="btn">+ Nueva Sucursal</a>
+                <a href="<?= BASE_URL ?>/medicos/bajas" class="btn btn-outline" style="font-size:0.85rem;">🗂 Dados de Baja</a>
+                <a href="<?= BASE_URL ?>/medicos/create" class="btn">+ Nuevo Médico</a>
             </div>
         </div>
 
         <?php
         $msg = $_GET['success'] ?? '';
         if ($msg === 'baja'): ?>
-            <div class="alert-success">✅ Sucursal dada de baja. Puede restaurarla desde "Dados de Baja".</div>
-        <?php elseif ($msg === 'restaurada'): ?>
-            <div class="alert-success">✅ Sucursal restaurada correctamente.</div>
-        <?php elseif (!empty($msg)): ?>
-            <div class="alert-success">✅ <?= htmlspecialchars($msg) ?></div>
+            <div class="alert-success">✅ Médico dado de baja. Puede restaurarlo desde "Dados de Baja".</div>
+        <?php elseif ($msg === 'restaurado'): ?>
+            <div class="alert-success">✅ Médico restaurado correctamente.</div>
+        <?php elseif ($msg === '1'): ?>
+            <div class="alert-success">✅ Médico registrado con éxito.</div>
         <?php endif; ?>
 
         <div class="card" style="overflow-x:auto;">
             <table class="data-table" style="width: 100%; text-align: left; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 15px 12px;">ID</th>
-                        <th style="padding: 15px 12px;">Nombre</th>
-                        <th style="padding: 15px 12px;">Ubicación</th>
-                        <th style="padding: 15px 12px;">Horarios</th>
-                        <th style="padding: 15px 12px;">Geocerca</th>
-                        <th style="padding: 15px 12px;">Estado</th>
-                        <th style="padding: 15px 12px; text-align: center;">Acciones</th>
+                        <th style="padding: 12px;">ID</th>
+                        <th style="padding: 12px;">Email / Usuario</th>
+                        <th style="padding: 12px;">Licencia Médica</th>
+                        <th style="padding: 12px;">Especialidades</th>
+                        <th style="padding: 12px; text-align: center;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($sucursales as $s): ?>
+                    <?php foreach($medicos as $m): ?>
                         <tr style="border-bottom: 1px solid var(--border-color);" class="table-row-hover">
-                            <td style="padding: 15px 12px; font-weight: 500; color: var(--text-muted);">#<?= $s['id'] ?></td>
-                            <td style="padding: 15px 12px; font-weight: 600; color: var(--primary-dark);"><?= htmlspecialchars($s['nombre']) ?></td>
-                            <td style="padding: 15px 12px;"><?= htmlspecialchars($s['ubicacion']) ?></td>
-                            <td style="padding: 15px 12px; font-size: 0.9rem; color: var(--text-muted);"><?= htmlspecialchars($s['horarios']) ?></td>
-                            <td style="padding: 15px 12px; font-size: 0.85rem; font-family: monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <?= htmlspecialchars($s['limitesgeocerca'] ?: 'No definida') ?>
-                            </td>
-                            <td style="padding: 15px 12px;">
-                                <span style="display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; 
-                                    background: <?= $s['estado'] === 'activo' ? '#dcfce7; color: #166534;' : '#fee2e2; color: #991b1b;' ?>">
-                                    <?= htmlspecialchars(ucfirst($s['estado'])) ?>
-                                </span>
-                            </td>
-                            <td style="padding: 15px 12px; text-align: center;">
+                            <td style="padding: 12px;"><?= htmlspecialchars($m['id']) ?></td>
+                            <td style="padding: 12px;"><?= htmlspecialchars($m['email']) ?></td>
+                            <td style="padding: 12px;"><?= htmlspecialchars($m['licencia_medica']) ?></td>
+                            <td style="padding: 12px;"><?= htmlspecialchars($m['especialidades'] ?? 'Ninguna') ?></td>
+                            <td style="padding: 12px; text-align: center;">
                                 <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-                                    <button onclick="confirmarBaja(<?= $s['id'] ?>, '<?= htmlspecialchars($s['nombre'], ENT_QUOTES) ?>')"
+                                    <button onclick="confirmarBaja(<?= $m['id'] ?>, '<?= htmlspecialchars($m['email'], ENT_QUOTES) ?>')"
                                             class="btn" style="padding:5px 10px;font-size:0.8rem;background:var(--warning-color,#f59e0b);border:none;cursor:pointer;">
                                         🗑 Dar de Baja
                                     </button>
@@ -62,12 +51,8 @@
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                    <?php if (empty($sucursales)): ?>
-                        <tr>
-                            <td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">
-                                No hay sucursales registradas en el sistema.
-                            </td>
-                        </tr>
+                    <?php if (empty($medicos)): ?>
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">No hay médicos registrados.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -110,11 +95,11 @@
 <div id="modalBaja" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;justify-content:center;align-items:center;">
     <div style="background:var(--card-bg,#fff);border-radius:16px;padding:32px;max-width:420px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.3);text-align:center;">
         <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
-        <h2 style="margin:0 0 10px;font-size:1.3rem;color:var(--text-primary);">Dar de Baja la Sucursal</h2>
+        <h2 style="margin:0 0 10px;font-size:1.3rem;color:var(--text-primary);">Dar de Baja al Médico</h2>
         <p id="modalBajaMsg" style="color:var(--text-muted);margin-bottom:24px;"></p>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:24px;">La sucursal quedará <strong>inactiva</strong> pero no se eliminará. Puede restaurarla desde "Dados de Baja".</p>
-        <form id="formBaja" method="POST" action="<?= BASE_URL ?>/sucursal/baja">
-            <input type="hidden" name="id" id="bajaSucursalId">
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:24px;">El médico quedará <strong>inactivo</strong> pero no se eliminará del sistema. Puede restaurarlo desde "Dados de Baja".</p>
+        <form id="formBaja" method="POST" action="<?= BASE_URL ?>/medicos/baja">
+            <input type="hidden" name="id" id="bajaMedicoId">
             <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                 <button type="button" onclick="document.getElementById('modalBaja').style.display='none'"
                         class="btn btn-outline" style="flex:1;">Cancelar</button>
@@ -126,8 +111,8 @@
 
 <script>
 function confirmarBaja(id, nombre) {
-    document.getElementById('bajaSucursalId').value = id;
-    document.getElementById('modalBajaMsg').textContent = '¿Dar de baja la sucursal ' + nombre + '?';
+    document.getElementById('bajaMedicoId').value = id;
+    document.getElementById('modalBajaMsg').textContent = '¿Dar de baja a ' + nombre + '?';
     document.getElementById('modalBaja').style.display = 'flex';
 }
 

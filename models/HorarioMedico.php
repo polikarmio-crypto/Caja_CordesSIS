@@ -12,6 +12,7 @@ class HorarioMedico {
             FROM horarios_medicos hm
             JOIN medicos m ON hm.medico_id = m.id
             JOIN usuarios u ON m.usuario_id = u.id
+            WHERE hm.activo = TRUE
             ORDER BY hm.medico_id, 
                 CASE hm.dia_semana
                     WHEN 'lunes' THEN 1
@@ -23,6 +24,19 @@ class HorarioMedico {
                     WHEN 'domingo' THEN 7
                     ELSE 8
                 END
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function findAllInactive() {
+        $stmt = $this->conn->prepare("
+            SELECT hm.*, u.email as medico_email 
+            FROM horarios_medicos hm
+            JOIN medicos m ON hm.medico_id = m.id
+            JOIN usuarios u ON m.usuario_id = u.id
+            WHERE hm.activo = FALSE
+            ORDER BY hm.medico_id
         ");
         $stmt->execute();
         return $stmt->fetchAll();
@@ -44,8 +58,29 @@ class HorarioMedico {
         return $stmt->execute();
     }
 
-    public function delete($id) {
+    /**
+     * Baja lógica: oculta el registro sin eliminarlo de la BD.
+     */
+    public function softDelete($id) {
+        $stmt = $this->conn->prepare("UPDATE horarios_medicos SET activo = FALSE WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+
+    /**
+     * Eliminación permanente: SOLO tras confirmar explícitamente.
+     */
+    public function hardDelete($id) {
         $stmt = $this->conn->prepare("DELETE FROM horarios_medicos WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+
+    /**
+     * Restaurar un registro dado de baja lógicamente.
+     */
+    public function restore($id) {
+        $stmt = $this->conn->prepare("UPDATE horarios_medicos SET activo = TRUE WHERE id = :id");
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }

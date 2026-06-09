@@ -6,13 +6,63 @@ class Insumo {
         $this->conn = Database::getInstance();
     }
 
-    public function findAll() {
+    public function findAll($page = null, $perPage = 30) {
+        if ($page === null) {
+            return $this->conn->query("
+                SELECT i.*, c.nombre as categoria_nombre 
+                FROM insumos i 
+                LEFT JOIN categorias_insumo c ON i.id_categoria = c.id
+                WHERE i.activo = TRUE
+                ORDER BY i.nombre
+            ")->fetchAll();
+        }
+        $offset = ($page - 1) * $perPage;
+        $stmt = $this->conn->prepare("
+            SELECT i.*, c.nombre as categoria_nombre 
+            FROM insumos i 
+            LEFT JOIN categorias_insumo c ON i.id_categoria = c.id
+            WHERE i.activo = TRUE
+            ORDER BY i.nombre
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function countAll() {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM insumos WHERE activo = TRUE");
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function findAllInactive() {
         return $this->conn->query("
             SELECT i.*, c.nombre as categoria_nombre 
             FROM insumos i 
             LEFT JOIN categorias_insumo c ON i.id_categoria = c.id
+            WHERE i.activo = FALSE
             ORDER BY i.nombre
         ")->fetchAll();
+    }
+
+    public function softDelete($id) {
+        $stmt = $this->conn->prepare("UPDATE insumos SET activo = FALSE, estado = 'inactivo' WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function hardDelete($id) {
+        $stmt = $this->conn->prepare("DELETE FROM insumos WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function restore($id) {
+        $stmt = $this->conn->prepare("UPDATE insumos SET activo = TRUE, estado = 'activo' WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     public function findById($id) {

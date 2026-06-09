@@ -6,8 +6,49 @@ class Sucursal {
         $this->conn = Database::getInstance();
     }
 
-    public function findAll() {
-        return $this->conn->query("SELECT * FROM sucursales ORDER BY nombre")->fetchAll();
+    public function findAll($page = null, $perPage = 30) {
+        if ($page === null) {
+            return $this->conn->query("SELECT * FROM sucursales WHERE activo = TRUE ORDER BY nombre")->fetchAll();
+        }
+        $offset = ($page - 1) * $perPage;
+        $stmt = $this->conn->prepare("
+            SELECT * FROM sucursales 
+            WHERE activo = TRUE 
+            ORDER BY nombre 
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function countAll() {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM sucursales WHERE activo = TRUE");
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function findAllInactive() {
+        return $this->conn->query("SELECT * FROM sucursales WHERE activo = FALSE ORDER BY nombre")->fetchAll();
+    }
+
+    public function softDelete($id) {
+        $stmt = $this->conn->prepare("UPDATE sucursales SET activo = FALSE, estado = 'inactivo' WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function hardDelete($id) {
+        $stmt = $this->conn->prepare("DELETE FROM sucursales WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function restore($id) {
+        $stmt = $this->conn->prepare("UPDATE sucursales SET activo = TRUE, estado = 'activo' WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     public function findById($id) {

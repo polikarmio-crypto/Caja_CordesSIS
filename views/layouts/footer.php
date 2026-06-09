@@ -1,3 +1,11 @@
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span>&copy; <?= date('Y') ?> Caja de Salud Cordes - Todos los derechos reservados.</span>
+                <span>Usuario: <b><?= htmlspecialchars($_SESSION['email'] ?? '') ?></b> (<?= htmlspecialchars($_SESSION['rol_nombre'] ?? '') ?>)</span>
+            </div>
+        </footer>
+    <?php endif; ?>
     </div>
     
     <!-- Controles de Accesibilidad Flotantes (RF-105) -->

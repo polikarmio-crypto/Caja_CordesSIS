@@ -6,8 +6,14 @@ class CitaController {
         $fecha_inicio = $_GET['fecha_inicio'] ?? '';
         $fecha_fin = $_GET['fecha_fin'] ?? '';
         
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $perPage = 30;
+
         $citaModel = new Cita();
-        $citas = $citaModel->findAll($fecha_inicio, $fecha_fin);
+        $totalCitas = $citaModel->countAll($fecha_inicio, $fecha_fin);
+        $totalPages = ceil($totalCitas / $perPage);
+
+        $citas = $citaModel->findAll($fecha_inicio, $fecha_fin, $page, $perPage);
         
         require_once __DIR__ . '/../views/citas/index.php';
     }
@@ -172,7 +178,7 @@ class CitaController {
             JOIN usuarios up ON p.usuario_id = up.id
             JOIN medicos m ON c.medico_id = m.id
             JOIN usuarios um ON m.usuario_id = um.id
-            LEFT JOIN medico_especialidades me ON me.medico_id = m.id AND me.principal = TRUE
+            LEFT JOIN medico_especialidades me ON me.medico_id = m.id
             LEFT JOIN especialidades e ON me.especialidad_id = e.id
             WHERE c.id = :id
         ");

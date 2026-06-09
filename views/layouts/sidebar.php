@@ -29,6 +29,7 @@
                     <summary class="group-title">🏥 Gestión Clínica</summary>
                     <div class="group-items">
                         <a href="<?= BASE_URL ?>/pacientes" class="nav-link <?= strpos($uri, 'paciente') !== false ? 'active' : '' ?>">Pacientes</a>
+                        <a href="<?= BASE_URL ?>/medicos" class="nav-link <?= strpos($uri, 'medico') !== false && strpos($uri, 'horario') === false && strpos($uri, 'ausencia') === false ? 'active' : '' ?>">Médicos</a>
                         <a href="<?= BASE_URL ?>/citas" class="nav-link <?= strpos($uri, 'cita') !== false ? 'active' : '' ?>">Citas Médicas</a>
                         <a href="<?= BASE_URL ?>/horarios" class="nav-link <?= strpos($uri, 'horario') !== false ? 'active' : '' ?>">Horarios Médicos</a>
                         <a href="<?= BASE_URL ?>/hospitalizacion" class="nav-link <?= strpos($uri, 'hospitalizacion') !== false ? 'active' : '' ?>">Hospitalización (Camas)</a>
@@ -95,11 +96,4 @@
             <?php endif; ?>
         </nav>
 
-        <div style="margin-top: auto; padding: 20px; flex-shrink: 0;">
-            <div style="padding: 15px; background: rgba(0,0,0,0.03); border-radius: 8px; margin-bottom: 10px;">
-                <p style="font-size: 0.9em; font-weight: bold;"><?= htmlspecialchars($_SESSION['email'] ?? 'Usuario') ?></p>
-                <p style="font-size: 0.8em; color: var(--text-muted);"><?= htmlspecialchars($_SESSION['rol_nombre'] ?? '') ?></p>
-            </div>
-            <a href="<?= BASE_URL ?>/logout" class="btn btn-outline" style="width: 100%;">Cerrar Sesión</a>
-        </div>
     </aside>

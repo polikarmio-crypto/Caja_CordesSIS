@@ -33,8 +33,8 @@
             </form>
         </div>
 
-        <div class="card">
-            <table style="width: 100%; text-align: left; border-collapse: collapse;">
+        <div class="card" style="overflow-x:auto;">
+            <table class="data-table" style="width: 100%; text-align: left; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid var(--border-color);">
                         <th style="padding: 12px;">Fecha y Hora</th>
@@ -48,7 +48,7 @@
                 </thead>
                 <tbody>
                     <?php foreach($citas as $c): ?>
-                        <tr style="border-bottom: 1px solid var(--border-color);">
+                        <tr style="border-bottom: 1px solid var(--border-color);" class="table-row-hover">
                             <td style="padding: 12px;">
                                 <strong><?= date('d/m/Y', strtotime($c['fecha_hora'])) ?></strong><br>
                                 <span style="color: var(--text-muted); font-size: 0.9em;"><?= date('H:i', strtotime($c['fecha_hora'])) ?></span>
@@ -88,11 +88,48 @@
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($citas)): ?>
-                        <tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No hay citas registradas.</td></tr>
+                        <tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text-muted);">No hay citas registradas.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
+
+        <!-- Paginación -->
+        <?php 
+        if ($totalPages > 1): 
+            $queryParams = $_GET;
+            unset($queryParams['page']);
+            $queryString = http_build_query($queryParams);
+            $queryPrefix = !empty($queryString) ? $queryString . '&' : '';
+        ?>
+        <div class="pagination-bar" style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:24px;flex-wrap:wrap;">
+            <?php if ($page > 1): ?>
+                <a href="?<?= $queryPrefix ?>page=1" class="btn btn-outline page-btn" style="padding:8px 14px;font-size:0.85rem;">«</a>
+                <a href="?<?= $queryPrefix ?>page=<?= $page - 1 ?>" class="btn btn-outline page-btn" style="padding:8px 14px;font-size:0.85rem;">‹ Anterior</a>
+            <?php endif; ?>
+
+            <?php
+            $start = max(1, $page - 2);
+            $end   = min($totalPages, $page + 2);
+            for ($i = $start; $i <= $end; $i++):
+            ?>
+                <a href="?<?= $queryPrefix ?>page=<?= $i ?>"
+                   class="btn <?= $i === $page ? '' : 'btn-outline' ?> page-btn"
+                   style="padding:8px 14px;font-size:0.85rem;<?= $i === $page ? 'pointer-events:none;opacity:0.8;' : '' ?>">
+                    <?= $i ?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPages): ?>
+                <a href="?<?= $queryPrefix ?>page=<?= $page + 1 ?>" class="btn btn-outline page-btn" style="padding:8px 14px;font-size:0.85rem;">Siguiente ›</a>
+                <a href="?<?= $queryPrefix ?>page=<?= $totalPages ?>" class="btn btn-outline page-btn" style="padding:8px 14px;font-size:0.85rem;">»</a>
+            <?php endif; ?>
+
+            <span style="color:var(--text-muted);font-size:0.85rem;margin-left:10px;">
+                Página <?= $page ?> de <?= $totalPages ?>
+            </span>
+        </div>
+        <?php endif; ?>
     </main>
 </div>
 

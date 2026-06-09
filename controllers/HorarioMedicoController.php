@@ -34,11 +34,37 @@ class HorarioMedicoController {
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             $hmModel = new HorarioMedico();
-            $hmModel->delete($_POST['id']);
-            log_activity($_SESSION['user_id'] ?? 1, 'Eliminar Horario', 'horarios_medicos');
-            header('Location: ' . BASE_URL . '/horarios?success=1');
+            $hmModel->softDelete($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Baja Lógica Horario', 'horarios_medicos');
+            header('Location: ' . BASE_URL . '/horarios?success=baja');
             exit();
         }
+    }
+
+    public function hardDelete() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST['confirm_delete'])) {
+            $hmModel = new HorarioMedico();
+            $hmModel->hardDelete($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Eliminación Permanente Horario', 'horarios_medicos');
+            header('Location: ' . BASE_URL . '/horarios/bajas?success=eliminado');
+            exit();
+        }
+    }
+
+    public function restore() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $hmModel = new HorarioMedico();
+            $hmModel->restore($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Restaurar Horario', 'horarios_medicos');
+            header('Location: ' . BASE_URL . '/horarios?success=restaurado');
+            exit();
+        }
+    }
+
+    public function bajas() {
+        $hmModel = new HorarioMedico();
+        $horarios = $hmModel->findAllInactive();
+        require_once __DIR__ . '/../views/horarios/bajas.php';
     }
 }
 ?>

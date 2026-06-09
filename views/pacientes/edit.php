@@ -45,7 +45,7 @@
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
                         <label>Fecha de Nacimiento</label>
-                        <input type="date" name="fecha_nac" value="<?= htmlspecialchars($paciente['fecha_nacimiento'] ?? '') ?>" required>
+                        <input type="date" name="fecha_nac" value="<?= htmlspecialchars($paciente['fecha_nac'] ?? '') ?>" required>
                     </div>
                 </div>
                 

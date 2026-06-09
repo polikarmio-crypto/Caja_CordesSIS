@@ -5,8 +5,48 @@ require_once __DIR__ . '/../models/User.php';
 class PacienteController {
     public function index() {
         $pacienteModel = new Paciente();
-        $pacientes = $pacienteModel->findAll();
+        $perPage = 30;
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $totalPacientes = $pacienteModel->countAll();
+        $totalPages = (int) ceil($totalPacientes / $perPage);
+        $pacientes = $pacienteModel->findAll($page, $perPage);
         require_once __DIR__ . '/../views/pacientes/index.php';
+    }
+
+    public function softDelete() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $pacienteModel = new Paciente();
+            $pacienteModel->softDelete($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Baja Lógica Paciente', 'pacientes');
+            header('Location: ' . BASE_URL . '/pacientes?success=baja');
+            exit();
+        }
+    }
+
+    public function restore() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $pacienteModel = new Paciente();
+            $pacienteModel->restore($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Restaurar Paciente', 'pacientes');
+            header('Location: ' . BASE_URL . '/pacientes?success=restaurado');
+            exit();
+        }
+    }
+
+    public function hardDelete() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST['confirm_delete'])) {
+            $pacienteModel = new Paciente();
+            $pacienteModel->hardDelete($_POST['id']);
+            log_activity($_SESSION['user_id'] ?? 1, 'Eliminación Permanente Paciente', 'pacientes');
+            header('Location: ' . BASE_URL . '/pacientes?success=eliminado');
+            exit();
+        }
+    }
+
+    public function bajas() {
+        $pacienteModel = new Paciente();
+        $pacientes = $pacienteModel->findAllInactive();
+        require_once __DIR__ . '/../views/pacientes/bajas.php';
     }
 
     public function create() {
@@ -122,7 +162,7 @@ class PacienteController {
                 // Actualizar datos en tabla pacientes
                 $stmtUpd = $conn->prepare("
                     UPDATE pacientes
-                       SET nombres = :nombres, apellidos = :apellidos, ci = :ci, fecha_nacimiento = :fn
+                       SET nombres = :nombres, apellidos = :apellidos, ci = :ci, fecha_nac = :fn
                      WHERE id = :id
                 ");
                 $stmtUpd->execute([

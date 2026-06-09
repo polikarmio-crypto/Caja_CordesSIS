@@ -6,16 +6,64 @@ class Paciente {
         $this->conn = Database::getInstance();
     }
 
-    public function findAll() {
+    public function findAll($page = 1, $perPage = 30) {
+        $offset = ($page - 1) * $perPage;
         $stmt = $this->conn->prepare("
             SELECT p.*, u.email, STRING_AGG(pt.telefono, ', ') as telefono
             FROM pacientes p 
             JOIN usuarios u ON p.usuario_id = u.id 
             LEFT JOIN paciente_telefonos pt ON p.id = pt.paciente_id 
+            WHERE p.activo = TRUE
             GROUP BY p.id, u.email
+            ORDER BY p.apellidos, p.nombres
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function countAll() {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM pacientes WHERE activo = TRUE");
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** Devuelve pacientes dados de baja lógica */
+    public function findAllInactive() {
+        $stmt = $this->conn->prepare("
+            SELECT p.*, u.email, STRING_AGG(pt.telefono, ', ') as telefono
+            FROM pacientes p 
+            JOIN usuarios u ON p.usuario_id = u.id 
+            LEFT JOIN paciente_telefonos pt ON p.id = pt.paciente_id 
+            WHERE p.activo = FALSE
+            GROUP BY p.id, u.email
+            ORDER BY p.apellidos
         ");
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    /** Baja lógica: marca como inactivo */
+    public function softDelete($id) {
+        $stmt = $this->conn->prepare("UPDATE pacientes SET activo = FALSE WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /** Eliminación permanente definitiva */
+    public function hardDelete($id) {
+        $stmt = $this->conn->prepare("DELETE FROM pacientes WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /** Restaurar baja lógica */
+    public function restore($id) {
+        $stmt = $this->conn->prepare("UPDATE pacientes SET activo = TRUE WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     public function findById($id) {

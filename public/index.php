@@ -43,6 +43,7 @@ require_once '../controllers/HospitalizacionController.php';
 require_once '../controllers/LaboratorioController.php';
 require_once '../controllers/FarmaciaController.php';
 require_once '../controllers/FacturacionController.php';
+require_once '../controllers/MedicoController.php';
 
 $router = new Router();
 
@@ -70,6 +71,19 @@ $router->add('GET', '/pacientes/create', ['PacienteController', 'create']);
 $router->add('POST', '/pacientes/create', ['PacienteController', 'create']);
 $router->add('GET', '/pacientes/edit', ['PacienteController', 'edit']);   // RF-011
 $router->add('POST', '/pacientes/edit', ['PacienteController', 'edit']);  // RF-011
+$router->add('GET', '/pacientes/bajas', ['PacienteController', 'bajas']);
+$router->add('POST', '/pacientes/baja', ['PacienteController', 'softDelete']);
+$router->add('POST', '/pacientes/restaurar', ['PacienteController', 'restore']);
+$router->add('POST', '/pacientes/eliminar', ['PacienteController', 'hardDelete']);
+
+// Médicos
+$router->add('GET', '/medicos', ['MedicoController', 'index']);
+$router->add('GET', '/medicos/create', ['MedicoController', 'create']);
+$router->add('POST', '/medicos/create', ['MedicoController', 'create']);
+$router->add('GET', '/medicos/bajas', ['MedicoController', 'bajas']);
+$router->add('POST', '/medicos/baja', ['MedicoController', 'softDelete']);
+$router->add('POST', '/medicos/restaurar', ['MedicoController', 'restore']);
+$router->add('POST', '/medicos/eliminar', ['MedicoController', 'hardDelete']);
 
 // Citas
 $router->add('GET', '/citas', ['CitaController', 'index']);
@@ -87,6 +101,9 @@ $router->add('GET', '/horarios', ['HorarioMedicoController', 'index']);
 $router->add('GET', '/horarios/create', ['HorarioMedicoController', 'create']);
 $router->add('POST', '/horarios/create', ['HorarioMedicoController', 'create']);
 $router->add('POST', '/horarios/delete', ['HorarioMedicoController', 'delete']);
+$router->add('GET', '/horarios/bajas', ['HorarioMedicoController', 'bajas']);
+$router->add('POST', '/horarios/restaurar', ['HorarioMedicoController', 'restore']);
+$router->add('POST', '/horarios/eliminar', ['HorarioMedicoController', 'hardDelete']);
 
 // Ausencias Médicas (RF-101)
 require_once '../controllers/AusenciaMedicoController.php';
@@ -130,6 +147,10 @@ require_once '../controllers/SucursalController.php';
 $router->add('GET', '/sucursal', ['SucursalController', 'index']);
 $router->add('GET', '/sucursal/create', ['SucursalController', 'create']);
 $router->add('POST', '/sucursal/create', ['SucursalController', 'create']);
+$router->add('GET', '/sucursal/bajas', ['SucursalController', 'bajas']);
+$router->add('POST', '/sucursal/baja', ['SucursalController', 'softDelete']);
+$router->add('POST', '/sucursal/restaurar', ['SucursalController', 'restore']);
+$router->add('POST', '/sucursal/eliminar', ['SucursalController', 'hardDelete']);
 
 // Inventario de Insumos - adaptado de aleslisis (HU-106)
 require_once '../models/Insumo.php';
@@ -137,6 +158,10 @@ require_once '../controllers/InsumoController.php';
 $router->add('GET', '/insumo', ['InsumoController', 'index']);
 $router->add('GET', '/insumo/create', ['InsumoController', 'create']);
 $router->add('POST', '/insumo/create', ['InsumoController', 'create']);
+$router->add('GET', '/insumo/bajas', ['InsumoController', 'bajas']);
+$router->add('POST', '/insumo/baja', ['InsumoController', 'softDelete']);
+$router->add('POST', '/insumo/restaurar', ['InsumoController', 'restore']);
+$router->add('POST', '/insumo/eliminar', ['InsumoController', 'hardDelete']);
 
 // Calificaciones de atención médica (Sprint 10 - HU-67)
 require_once '../models/Calificacion.php';

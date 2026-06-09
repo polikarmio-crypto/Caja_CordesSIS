@@ -8,13 +8,7 @@
         <!-- LADO IZQUIERDO — marca -->
         <div class="login-brand-side">
             <div class="login-brand-logo">
-                <div class="login-brand-icon">
-                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="14" cy="14" r="11" stroke="#00ba8b" stroke-width="1.8"/>
-                        <circle cx="14" cy="14" r="5"  stroke="#00ba8b" stroke-width="1.8"/>
-                        <circle cx="14" cy="14" r="1.8" fill="#00ba8b"/>
-                    </svg>
-                </div>
+                <img src="<?= BASE_URL ?>/logo.png" alt="Caja Cordes Logo" style="height: 56px; width: auto; object-fit: contain;">
                 <div>
                     <span class="login-brand-name">Caja Cordes</span>
                     <span class="login-brand-tag">Sistema de gestión clínica</span>
