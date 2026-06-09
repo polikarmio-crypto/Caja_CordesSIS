@@ -1,36 +1,63 @@
 <?php require_once '../views/layouts/header.php'; ?>
-<div class="login-wrapper">
-    <div class="login-left">
-        <h1>Caja Cordes</h1>
-        <p>Restablecimiento Seguro de Contraseña.</p>
-    </div>
 
-    <div class="login-right">
-        <div class="login-box">
-            <h2 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.8rem;">Nueva Contraseña</h2>
-            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">
-                Defina su nueva contraseña de alta seguridad para acceder al sistema.
-            </p>
+<div class="login-wrapper">
+    <canvas id="login-canvas"></canvas>
+
+    <div class="login-layout login-layout--centered">
+
+        <div class="login-card">
+            <div class="login-card-accent"></div>
+
+            <div class="login-card-logo">
+                <div class="login-brand-icon login-brand-icon--sm">
+                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="14" cy="14" r="11" stroke="#00ba8b" stroke-width="1.8"/>
+                        <circle cx="14" cy="14" r="5"  stroke="#00ba8b" stroke-width="1.8"/>
+                        <circle cx="14" cy="14" r="1.8" fill="#00ba8b"/>
+                    </svg>
+                </div>
+                <span class="login-brand-name">Caja Cordes</span>
+            </div>
+
+            <h2 class="login-title">Nueva contraseña</h2>
+            <p class="login-subtitle">Defina una contraseña segura para su cuenta.</p>
 
             <?php if (!empty($error)): ?>
-                <div style="padding: 12px; background-color: #fef2f2; border-left: 4px solid #ef4444; color: #b91c1c; border-radius: 4px; margin-bottom: 20px;">
+                <div class="login-alert login-alert--error">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
                     <?= htmlspecialchars($error) ?>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>/password/change">
+            <form method="POST" action="<?= BASE_URL ?>/password/change" class="login-form">
                 <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                 <div class="form-group">
-                    <label for="password">Nueva Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required autofocus>
+                    <label for="password" class="login-label">Nueva contraseña</label>
+                    <div class="login-input-wrap">
+                        <svg class="login-input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="3.5" y="7" width="9" height="6" rx="1.3" stroke="currentColor" stroke-width="1.3"/>
+                            <path d="M5.5 7V5.5a2.5 2.5 0 015 0V7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            <circle cx="8" cy="10" r=".9" fill="currentColor"/>
+                        </svg>
+                        <input type="password" id="password" name="password"
+                               placeholder="Mínimo 6 caracteres"
+                               minlength="6" autocomplete="new-password"
+                               required autofocus>
+                    </div>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 15px; font-size: 1.1rem; padding: 14px;">Restablecer e Iniciar Sesión</button>
+                <button type="submit" class="login-btn">Restablecer e ingresar</button>
             </form>
 
             <div style="margin-top: 20px; text-align: center;">
-                <a href="<?= BASE_URL ?>/" style="color: var(--primary-color); font-size: 0.9rem; text-decoration: none;">← Cancelar</a>
+                <a href="<?= BASE_URL ?>/login" class="login-link">← Volver al inicio de sesión</a>
             </div>
         </div>
+
     </div>
 </div>
+
+<script src="<?= BASE_URL ?>/js/login-bg.js"></script>
 <?php require_once '../views/layouts/footer.php'; ?>

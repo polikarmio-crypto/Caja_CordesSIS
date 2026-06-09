@@ -1,49 +1,70 @@
 <?php require_once '../views/layouts/header.php'; ?>
-<div class="login-wrapper">
-    <div class="login-left">
-        <h1>Caja Cordes</h1>
-        <p>Recuperación de Contraseña y Seguridad de Acceso.</p>
-    </div>
 
-    <div class="login-right">
-        <div class="login-box">
-            <h2 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.8rem;">Recuperar Contraseña</h2>
-            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">
-                Introduzca su correo electrónico registrado y le proporcionaremos un enlace seguro para restablecer su contraseña.
-            </p>
+<div class="login-wrapper">
+    <canvas id="login-canvas"></canvas>
+
+    <div class="login-layout login-layout--centered">
+
+        <div class="login-card">
+            <div class="login-card-accent"></div>
+
+            <div class="login-card-logo">
+                <div class="login-brand-icon login-brand-icon--sm">
+                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="14" cy="14" r="11" stroke="#00ba8b" stroke-width="1.8"/>
+                        <circle cx="14" cy="14" r="5"  stroke="#00ba8b" stroke-width="1.8"/>
+                        <circle cx="14" cy="14" r="1.8" fill="#00ba8b"/>
+                    </svg>
+                </div>
+                <span class="login-brand-name">Caja Cordes</span>
+            </div>
+
+            <h2 class="login-title">Recuperar acceso</h2>
+            <p class="login-subtitle">Le enviaremos un enlace para restablecer su contraseña.</p>
 
             <?php if (!empty($error)): ?>
-                <div style="padding: 12px; background-color: #fef2f2; border-left: 4px solid #ef4444; color: #b91c1c; border-radius: 4px; margin-bottom: 20px;">
+                <div class="login-alert login-alert--error">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
                     <?= htmlspecialchars($error) ?>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($success)): ?>
-                <div style="padding: 12px; background-color: #f0fdf4; border-left: 4px solid #22c55e; color: #166534; border-radius: 4px; margin-bottom: 20px;">
+                <div class="login-alert login-alert--success">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                     <?= htmlspecialchars($success) ?>
                 </div>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['mock_reset_link'])): ?>
-                <div style="padding: 12px; background-color: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a8a; border-radius: 4px; margin-bottom: 20px; font-size: 0.85rem; word-break: break-all;">
-                    🔗 <strong>[Simulador de Enlace]</strong> Haga clic para restablecer:<br>
-                    <a href="<?= htmlspecialchars($_SESSION['mock_reset_link']) ?>" style="font-weight: bold; color: var(--primary-color);"><?= htmlspecialchars($_SESSION['mock_reset_link']) ?></a>
-                </div>
-                <?php unset($_SESSION['mock_reset_link']); ?>
-            <?php endif; ?>
-
-            <form method="POST" action="<?= BASE_URL ?>/password/reset">
+            <form method="POST" action="<?= BASE_URL ?>/password/reset" class="login-form">
                 <div class="form-group">
-                    <label for="email">Correo Electrónico</label>
-                    <input type="email" id="email" name="email" placeholder="ejemplo@cajacordes.com" required autofocus>
+                    <label for="email" class="login-label">Correo electrónico</label>
+                    <div class="login-input-wrap">
+                        <svg class="login-input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                            <path d="M1.5 5.5l6.5 4 6.5-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                        </svg>
+                        <input type="email" id="email" name="email"
+                               placeholder="usuario@cajacordes.com"
+                               autocomplete="email" required autofocus>
+                    </div>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 15px; font-size: 1.1rem; padding: 14px;">Enviar Enlace de Recuperación</button>
+                <button type="submit" class="login-btn">Enviar enlace de recuperación</button>
             </form>
 
             <div style="margin-top: 20px; text-align: center;">
-                <a href="<?= BASE_URL ?>/" style="color: var(--primary-color); font-size: 0.9rem; text-decoration: none;">← Volver al Login</a>
+                <a href="<?= BASE_URL ?>/login" class="login-link">← Volver al inicio de sesión</a>
             </div>
         </div>
+
     </div>
 </div>
+
+<script src="<?= BASE_URL ?>/js/login-bg.js"></script>
 <?php require_once '../views/layouts/footer.php'; ?>
