@@ -35,7 +35,15 @@
 
         <!-- CARD DE LOGIN -->
         <div class="login-card">
-            <div class="login-card-accent"></div>
+            <div class="login-card-header">
+                <div class="login-card-accent"></div>
+                <button id="themeToggleBtn" type="button" class="theme-toggle-btn" aria-label="Cambiar modo de color">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="themeToggleLabel">Modo claro</span>
+                </button>
+            </div>
 
             <h2 class="login-title">Bienvenido</h2>
             <p class="login-subtitle">Ingrese sus credenciales para continuar</p>
@@ -119,5 +127,5 @@
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/js/login-bg.js"></script>
+<script src="<?= BASE_URL ?>/js/login-bg.js?v=<?= filemtime(__DIR__ . '/../../public/js/login-bg.js') ?>"></script>
 <?php require_once '../views/layouts/footer.php'; ?>

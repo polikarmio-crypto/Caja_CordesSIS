@@ -96,4 +96,37 @@
             <?php endif; ?>
         </nav>
 
+        <div style="margin-top:auto; padding:16px 12px; display:flex; flex-direction:column; gap:10px;">
+
+            <!-- ══ BOTÓN TOGGLE MODO ══ -->
+            <button class="theme-toggle-btn" id="themeToggleBtn" type="button">
+                <div class="theme-toggle-icon">
+                    <!-- Ícono luna (dark mode activo) -->
+                    <svg id="themeIconMoon" fill="none" viewBox="0 0 13 13" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 7.5A5.5 5.5 0 015.5 2 5.5 5.5 0 100 7.5 5.5 5.5 0 0011 7.5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                    <!-- Ícono sol (light mode activo) -->
+                    <svg id="themeIconSun" fill="none" viewBox="0 0 13 13" xmlns="http://www.w3.org/2000/svg" style="display:none">
+                        <circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+                        <path d="M6.5 1v1M6.5 11v1M1 6.5h1M11 6.5h1M2.8 2.8l.7.7M9.5 9.5l.7.7M2.8 10.2l.7-.7M9.5 3.5l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span id="themeToggleLabel">Modo claro</span>
+            </button>
+
+            <!-- Info usuario -->
+            <div style="padding:12px;background:var(--bg-active);border-radius:10px;border:1px solid var(--border-color);">
+                <p style="font-size:0.82em;font-weight:700;color:var(--text-main);">
+                    <?= htmlspecialchars($_SESSION['email'] ?? 'Usuario') ?>
+                </p>
+                <p style="font-size:0.72em;color:var(--text-muted);">
+                    <?= htmlspecialchars($_SESSION['rol_nombre'] ?? '') ?>
+                </p>
+            </div>
+
+            <a href="<?= BASE_URL ?>/logout" class="btn btn-outline" style="width:100%;text-align:center;">
+                Cerrar Sesión
+            </a>
+        </div>
+
     </aside>
