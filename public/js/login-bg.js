@@ -1,4 +1,5 @@
 (function () {
+    console.log('[login-bg] cargado');
     var canvas = document.getElementById('login-canvas');
     if (!canvas) return;
     var scene = canvas.parentElement;

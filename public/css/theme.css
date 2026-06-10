@@ -1,0 +1,288 @@
+/* ================================================================
+   THEME.CSS — Sistema de temas Caja Cordes
+   Incluir ANTES de style.css en header.php:
+   <link rel="stylesheet" href="<?= BASE_URL ?>/css/theme.css">
+   ================================================================ */
+
+/* ── MODO OSCURO (por defecto) ── */
+:root,
+[data-theme="dark"] {
+    /* Fondos */
+    --bg-color:         #020f0a;
+    --bg-surface:       rgba(10, 32, 22, 0.85);
+    --bg-card:          rgba(13, 40, 28, 0.7);
+    --bg-input:         rgba(0, 0, 0, 0.35);
+    --bg-hover:         rgba(0, 122, 94, 0.12);
+    --bg-active:        rgba(0, 122, 94, 0.22);
+
+    /* Textos */
+    --text-main:        #e2f5ee;
+    --text-secondary:   #8ecdb5;
+    --text-muted:       #4d9e80;
+
+    /* Marca / acento */
+    --primary-color:    #007A5E;
+    --primary-light:    #00ba8b;
+    --primary-dark:     #004c3a;
+
+    /* Bordes */
+    --border-color:     rgba(0, 186, 139, 0.18);
+    --border-hover:     rgba(0, 186, 139, 0.45);
+
+    /* Sidebar */
+    --sidebar-bg:       rgba(3, 14, 10, 0.97);
+    --sidebar-text:     #8ecdb5;
+    --sidebar-active:   rgba(0, 122, 94, 0.28);
+
+    /* Componentes */
+    --white:            #0d2219;
+    --secondary-color:  rgba(0, 0, 0, 0.25);
+    --danger:           #f87171;
+    --success:          #00ba8b;
+    --warning:          #eab308;
+
+    /* Sombras */
+    --shadow-md:        0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg:        0 8px 48px rgba(0, 0, 0, 0.5);
+    --shadow-glow:      0 0 20px rgba(0, 122, 94, 0.35);
+
+    /* Toggle */
+    --toggle-bg:        rgba(13, 40, 28, 0.8);
+    --toggle-border:    rgba(0, 186, 139, 0.3);
+
+    /* Tabla */
+    --table-alt:        rgba(0, 186, 139, 0.04);
+    --table-border:     rgba(0, 186, 139, 0.08);
+}
+
+/* ── MODO CLARO ── */
+[data-theme="light"] {
+    /* Fondos */
+    --bg-color:         #f0faf6;
+    --bg-surface:       #ffffff;
+    --bg-card:          #ffffff;
+    --bg-input:         #f4faf8;
+    --bg-hover:         rgba(0, 122, 94, 0.07);
+    --bg-active:        rgba(0, 122, 94, 0.12);
+
+    /* Textos */
+    --text-main:        #0d2b1e;
+    --text-secondary:   #1a5c42;
+    --text-muted:       #4d9e80;
+
+    /* Marca / acento (igual) */
+    --primary-color:    #007A5E;
+    --primary-light:    #00a876;
+    --primary-dark:     #004c3a;
+
+    /* Bordes */
+    --border-color:     rgba(0, 122, 94, 0.15);
+    --border-hover:     rgba(0, 122, 94, 0.4);
+
+    /* Sidebar */
+    --sidebar-bg:       #ffffff;
+    --sidebar-text:     #1a5c42;
+    --sidebar-active:   rgba(0, 122, 94, 0.1);
+
+    /* Componentes */
+    --white:            #ffffff;
+    --secondary-color:  #f4faf8;
+    --danger:           #ef4444;
+    --success:          #007A5E;
+    --warning:          #ca8a04;
+
+    /* Sombras */
+    --shadow-md:        0 4px 16px rgba(0, 122, 94, 0.08);
+    --shadow-lg:        0 8px 32px rgba(0, 122, 94, 0.12);
+    --shadow-glow:      0 0 20px rgba(0, 122, 94, 0.2);
+
+    /* Toggle */
+    --toggle-bg:        #ffffff;
+    --toggle-border:    rgba(0, 122, 94, 0.25);
+
+    /* Tabla */
+    --table-alt:        rgba(0, 122, 94, 0.03);
+    --table-border:     rgba(0, 122, 94, 0.1);
+}
+
+/* ── TRANSICIÓN SUAVE AL CAMBIAR TEMA ── */
+*,
+body,
+.sidebar,
+.app-container,
+.card,
+.nav-link,
+input,
+select,
+textarea,
+button,
+table,
+th, td {
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease !important;
+}
+
+/* ── BODY BASE ── */
+body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-main) !important;
+}
+
+/* ── APP CONTAINER ── */
+.app-container {
+    background: var(--bg-color) !important;
+    min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--border-color) !important;
+    color: var(--sidebar-text) !important;
+}
+
+.sidebar-header {
+    color: var(--text-main) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: var(--sidebar-bg) !important;
+}
+
+.sidebar nav a.nav-link {
+    color: var(--sidebar-text) !important;
+    border-radius: 9px;
+    transition: all 0.2s ease !important;
+}
+
+.sidebar nav a.nav-link:hover {
+    background: var(--bg-hover) !important;
+    color: var(--primary-light) !important;
+}
+
+.sidebar nav a.nav-link.active {
+    background: var(--sidebar-active) !important;
+    color: var(--primary-light) !important;
+    font-weight: 600;
+}
+
+/* ── CARDS ── */
+.card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── INPUTS ── */
+input, select, textarea {
+    background: var(--bg-input) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-light) !important;
+    box-shadow: 0 0 0 3px rgba(0, 186, 139, 0.12) !important;
+    outline: none !important;
+}
+
+/* ── TABLAS ── */
+table {
+    color: var(--text-main) !important;
+}
+
+th {
+    color: var(--text-muted) !important;
+    border-color: var(--border-color) !important;
+}
+
+td {
+    border-color: var(--table-border) !important;
+    color: var(--text-secondary) !important;
+}
+
+tr:nth-child(even) td {
+    background: var(--table-alt) !important;
+}
+
+/* ── BOTÓN TOGGLE TEMA ── */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 6px 9px;
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--primary-light);
+}
+
+.theme-toggle-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-active);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.theme-toggle-icon svg {
+    width: 13px;
+    height: 13px;
+    color: var(--primary-light);
+}
+
+/* ── TEXTOS GENERALES ── */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main) !important;
+}
+
+p, span, label, li {
+    color: var(--text-secondary);
+}
+
+.text-muted,
+[class*="text-muted"] {
+    color: var(--text-muted) !important;
+}
+
+/* ── MODALES / OVERLAYS ── */
+.modal-content,
+.modal-box,
+[class*="modal"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+/* ── ALERTAS / BADGES ── */
+.alert-success { background: rgba(0, 186, 139, 0.12) !important; border-color: rgba(0, 186, 139, 0.3) !important; color: var(--success) !important; }
+.alert-danger  { background: rgba(239, 68, 68, 0.1)  !important; border-color: rgba(239, 68, 68, 0.3)  !important; color: var(--danger)  !important; }
+.alert-warning { background: rgba(234, 179, 8, 0.1)  !important; border-color: rgba(234, 179, 8, 0.3)  !important; color: var(--warning) !important; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }

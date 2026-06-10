@@ -25,6 +25,25 @@
             const active = document.body.classList.toggle('fuente-grande');
             localStorage.setItem('fuente-grande', active);
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.ThemeManager && typeof ThemeManager.init === 'function') {
+                ThemeManager.init('<?= addslashes($_SESSION['user_id'] ?? $_SESSION['email'] ?? 'guest') ?>');
+            }
+
+            if (window.ThemeManager && typeof ThemeManager.updateButton === 'function') {
+                ThemeManager.updateButton(document.documentElement.getAttribute('data-theme') || 'dark');
+            }
+
+            const themeToggle = document.getElementById('themeToggleBtn');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function () {
+                    if (window.ThemeManager && typeof ThemeManager.toggle === 'function') {
+                        ThemeManager.toggle();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
