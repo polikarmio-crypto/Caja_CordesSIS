@@ -1,5 +1,6 @@
 <?php
 session_start();
+chdir(__DIR__);
 
 // BASE_URL: detecta automáticamente si corre con Apache (subdirectorio) o php -S
 if (php_sapi_name() === 'cli-server') {
@@ -11,39 +12,39 @@ if (php_sapi_name() === 'cli-server') {
     define('BASE_URL', rtrim($baseDir, '/'));
 }
 
-require_once '../config/Database.php';
-require_once '../core/Helpers.php';
-require_once '../core/Router.php';
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../core/Helpers.php';
+require_once __DIR__ . '/../core/Router.php';
 
 // Estructuras de Datos Personalizadas
-require_once '../core/structures/CustomNode.php';
-require_once '../core/structures/CustomQueue.php';
-require_once '../core/structures/CustomDoublyLinkedList.php';
+require_once __DIR__ . '/../core/structures/CustomNode.php';
+require_once __DIR__ . '/../core/structures/CustomQueue.php';
+require_once __DIR__ . '/../core/structures/CustomDoublyLinkedList.php';
 
 // Models
-require_once '../models/User.php';
-require_once '../models/Paciente.php';
-require_once '../models/Cita.php';
-require_once '../models/HistoriaClinica.php';
-require_once '../models/HorarioMedico.php';
-require_once '../models/Hospitalizacion.php';
-require_once '../models/Laboratorio.php';
-require_once '../models/Medicamento.php';
-require_once '../models/AusenciaMedico.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Paciente.php';
+require_once __DIR__ . '/../models/Cita.php';
+require_once __DIR__ . '/../models/HistoriaClinica.php';
+require_once __DIR__ . '/../models/HorarioMedico.php';
+require_once __DIR__ . '/../models/Hospitalizacion.php';
+require_once __DIR__ . '/../models/Laboratorio.php';
+require_once __DIR__ . '/../models/Medicamento.php';
+require_once __DIR__ . '/../models/AusenciaMedico.php';
 
 // Controllers
-require_once '../controllers/AuthController.php';
-require_once '../controllers/DashboardController.php';
-require_once '../controllers/PacienteController.php';
-require_once '../controllers/CitaController.php';
-require_once '../controllers/HistoriaClinicaController.php';
-require_once '../controllers/ReporteController.php';
-require_once '../controllers/HorarioMedicoController.php';
-require_once '../controllers/HospitalizacionController.php';
-require_once '../controllers/LaboratorioController.php';
-require_once '../controllers/FarmaciaController.php';
-require_once '../controllers/FacturacionController.php';
-require_once '../controllers/MedicoController.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
+require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/PacienteController.php';
+require_once __DIR__ . '/../controllers/CitaController.php';
+require_once __DIR__ . '/../controllers/HistoriaClinicaController.php';
+require_once __DIR__ . '/../controllers/ReporteController.php';
+require_once __DIR__ . '/../controllers/HorarioMedicoController.php';
+require_once __DIR__ . '/../controllers/HospitalizacionController.php';
+require_once __DIR__ . '/../controllers/LaboratorioController.php';
+require_once __DIR__ . '/../controllers/FarmaciaController.php';
+require_once __DIR__ . '/../controllers/FacturacionController.php';
+require_once __DIR__ . '/../controllers/MedicoController.php';
 
 $router = new Router();
 
@@ -106,7 +107,7 @@ $router->add('POST', '/horarios/restaurar', ['HorarioMedicoController', 'restore
 $router->add('POST', '/horarios/eliminar', ['HorarioMedicoController', 'hardDelete']);
 
 // Ausencias Médicas (RF-101)
-require_once '../controllers/AusenciaMedicoController.php';
+require_once __DIR__ . '/../controllers/AusenciaMedicoController.php';
 $router->add('GET', '/ausencias', ['AusenciaMedicoController', 'index']);
 $router->add('GET', '/ausencias/create', ['AusenciaMedicoController', 'create']);
 $router->add('POST', '/ausencias/create', ['AusenciaMedicoController', 'create']);
@@ -142,8 +143,8 @@ $router->add('GET', '/facturacion/pdf', ['FacturacionController', 'downloadPdf']
 $router->add('POST', '/facturacion/status', ['FacturacionController', 'updateStatus']);
 
 // Sucursales - adaptado de aleslisis (HU-107)
-require_once '../models/Sucursal.php';
-require_once '../controllers/SucursalController.php';
+require_once __DIR__ . '/../models/Sucursal.php';
+require_once __DIR__ . '/../controllers/SucursalController.php';
 $router->add('GET', '/sucursal', ['SucursalController', 'index']);
 $router->add('GET', '/sucursal/create', ['SucursalController', 'create']);
 $router->add('POST', '/sucursal/create', ['SucursalController', 'create']);
@@ -153,8 +154,8 @@ $router->add('POST', '/sucursal/restaurar', ['SucursalController', 'restore']);
 $router->add('POST', '/sucursal/eliminar', ['SucursalController', 'hardDelete']);
 
 // Inventario de Insumos - adaptado de aleslisis (HU-106)
-require_once '../models/Insumo.php';
-require_once '../controllers/InsumoController.php';
+require_once __DIR__ . '/../models/Insumo.php';
+require_once __DIR__ . '/../controllers/InsumoController.php';
 $router->add('GET', '/insumo', ['InsumoController', 'index']);
 $router->add('GET', '/insumo/create', ['InsumoController', 'create']);
 $router->add('POST', '/insumo/create', ['InsumoController', 'create']);
@@ -164,8 +165,8 @@ $router->add('POST', '/insumo/restaurar', ['InsumoController', 'restore']);
 $router->add('POST', '/insumo/eliminar', ['InsumoController', 'hardDelete']);
 
 // Calificaciones de atención médica (Sprint 10 - HU-67)
-require_once '../models/Calificacion.php';
-require_once '../controllers/CalificacionController.php';
+require_once __DIR__ . '/../models/Calificacion.php';
+require_once __DIR__ . '/../controllers/CalificacionController.php';
 $router->add('POST', '/calificaciones/create', ['CalificacionController', 'create']);
 
 $router->run();
