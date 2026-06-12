@@ -59,7 +59,11 @@
             </form>
 
             <div style="margin-top: 20px; text-align: center;">
-                <a href="<?= BASE_URL ?>/login" class="login-link">← Volver al inicio de sesión</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="<?= BASE_URL ?>/dashboard" class="login-link">← Volver al Dashboard</a>
+                <?php else: ?>
+                    <a href="<?= BASE_URL ?>/" class="login-link">← Volver al inicio de sesión</a>
+                <?php endif; ?>
             </div>
         </div>
 
