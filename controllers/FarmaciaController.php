@@ -16,6 +16,26 @@ class FarmaciaController {
         require_once __DIR__ . '/../views/farmacia/index.php';
     }
 
+    public function create() {
+        $this->checkAccess();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nombre = $_POST['nombre'] ?? '';
+            $tipo = $_POST['tipo'] ?? '';
+            $stock = (int)($_POST['stock'] ?? 0);
+            $precio = (float)($_POST['precio_unitario'] ?? 0.0);
+            $vencimiento = $_POST['vencimiento'] ?? null;
+
+            $medModel = new Medicamento();
+            if ($medModel->create($nombre, $tipo, $stock, $precio, $vencimiento)) {
+                log_activity($_SESSION['user_id'] ?? 1, "Crear Medicamento: $nombre", 'medicamentos');
+                header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+creado+con+exito');
+            } else {
+                header('Location: ' . BASE_URL . '/farmacia?error=Error+al+crear+medicamento');
+            }
+            exit();
+        }
+    }
+
     public function update() {
         $this->checkAccess();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

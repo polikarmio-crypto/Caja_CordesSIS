@@ -9,7 +9,7 @@
             </div>
             <div>
                 <a href="<?= BASE_URL ?>/farmacia/recetas" class="btn btn-outline" style="margin-right: 10px;">Despachar Recetas</a>
-                <button class="btn" onclick="alert('Funcionalidad de crear no implementada en Demo.')">+ Añadir Medicamento</button>
+                <button class="btn" onclick="document.getElementById('modalCreate').style.display='flex'">+ Añadir Medicamento</button>
             </div>
         </div>
 
@@ -79,6 +79,40 @@
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('modalUpdate').style.display='none'">Cancelar</button>
                 <button type="submit" class="btn">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Create -->
+<div id="modalCreate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s; color: #1e293b;">
+        <h2 style="margin-bottom:15px; color:var(--primary-color);">Añadir Medicamento</h2>
+        <form action="<?= BASE_URL ?>/farmacia/create" method="POST">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Nombre del Medicamento</label>
+                <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Tipo (Tabletas, Jarabe, etc.)</label>
+                <input type="text" name="tipo" placeholder="Ej. Tabletas, Jarabe" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Stock Inicial</label>
+                <input type="number" name="stock" value="0" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Precio Unitario ($)</label>
+                <input type="number" step="0.01" name="precio_unitario" value="0.00" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Fecha de Vencimiento</label>
+                <input type="date" name="vencimiento" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('modalCreate').style.display='none'">Cancelar</button>
+                <button type="submit" class="btn">Guardar</button>
             </div>
         </form>
     </div>

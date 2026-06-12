@@ -125,6 +125,7 @@ $router->add('POST', '/laboratorio/create', ['LaboratorioController', 'create'])
 
 // Farmacia
 $router->add('GET', '/farmacia', ['FarmaciaController', 'index']);
+$router->add('POST', '/farmacia/create', ['FarmaciaController', 'create']);
 $router->add('POST', '/farmacia/update', ['FarmaciaController', 'update']);
 $router->add('GET', '/farmacia/recetas', ['FarmaciaController', 'recetas']);
 $router->add('POST', '/farmacia/despachar', ['FarmaciaController', 'despachar']);
