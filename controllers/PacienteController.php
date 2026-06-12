@@ -127,7 +127,9 @@ class PacienteController {
                 header('Location: ' . BASE_URL . '/pacientes?success=1');
                 exit();
             } catch (Exception $e) {
-                $conn->rollBack();
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
                 $error = "Error al crear paciente: " . $e->getMessage();
                 require_once __DIR__ . '/../views/pacientes/create.php';
             }
