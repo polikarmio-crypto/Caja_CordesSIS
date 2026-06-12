@@ -7,7 +7,9 @@
                 <h1>Citas Médicas</h1>
                 <p>Gestión de agenda de citas.</p>
             </div>
-            <a href="<?= BASE_URL ?>/citas/create" class="btn">+ Nueva Cita</a>
+            <?php if (($_SESSION['rol_nombre'] ?? '') === 'Paciente'): ?>
+                <a href="<?= BASE_URL ?>/citas/create" class="btn">+ Nueva Cita</a>
+            <?php endif; ?>
         </div>
 
         <?php if (isset($_GET['success'])): ?>

@@ -105,7 +105,8 @@ $is_paciente = ($_SESSION['rol_nombre'] ?? '') === 'Paciente';
 
                 <div class="form-group">
                     <label>Fecha y Hora</label>
-                    <input type="datetime-local" name="fecha_hora" required>
+                    <?php $min_date = date('Y-m-d\T00:00', strtotime('+1 day')); ?>
+                    <input type="datetime-local" name="fecha_hora" min="<?= $min_date ?>" required>
                 </div>
 
                 <div class="form-group">

@@ -7,9 +7,7 @@
                 <h1>Bienvenido al Panel de Control</h1>
                 <p>Estás conectado como <strong><?= htmlspecialchars($rol) ?></strong>.</p>
             </div>
-            <?php if ($rol !== 'Paciente'): ?>
-                <a href="<?= BASE_URL ?>/citas/create" class="btn">+ Nueva Cita</a>
-            <?php else: ?>
+            <?php if ($rol === 'Paciente'): ?>
                 <a href="<?= BASE_URL ?>/citas/create" class="btn">Agendar Nueva Cita</a>
             <?php endif; ?>
         </div>

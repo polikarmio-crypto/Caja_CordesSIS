@@ -96,9 +96,22 @@ class MedicoController {
             $licencia_medica = $_POST['licencia_medica'] ?? '';
             $especialidades = $_POST['especialidades'] ?? [];
 
-            $conn->beginTransaction();
-
             try {
+                $email = trim($email);
+                $licencia_medica = trim($licencia_medica);
+
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    throw new Exception("El correo electrónico no es válido.");
+                }
+                if (empty($password) || strlen($password) < 4) {
+                    throw new Exception("La contraseña debe tener al menos 4 caracteres.");
+                }
+                if (empty($licencia_medica) || strlen($licencia_medica) < 3) {
+                    throw new Exception("La licencia médica debe tener al menos 3 caracteres.");
+                }
+
+                $conn->beginTransaction();
+
                 // Obtener ID del rol 'Médico' dinámicamente
                 $stmtRol = $conn->prepare("SELECT id FROM roles WHERE nombre = 'Médico' LIMIT 1");
                 $stmtRol->execute();
@@ -126,7 +139,9 @@ class MedicoController {
                     throw new Exception("Error al insertar el registro médico.");
                 }
             } catch (Exception $e) {
-                $conn->rollBack();
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
                 $error = "Error al crear médico: " . $e->getMessage();
                 
                 // Cargar especialidades nuevamente para la vista

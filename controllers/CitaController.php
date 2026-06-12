@@ -19,6 +19,11 @@ class CitaController {
     }
 
     public function create() {
+        if (($_SESSION['rol_nombre'] ?? '') !== 'Paciente') {
+            header('Location: ' . BASE_URL . '/dashboard');
+            exit();
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $paciente_id = $_POST['paciente_id'] ?? '';
             $medico_id   = $_POST['medico_id']   ?? '';
@@ -30,6 +35,18 @@ class CitaController {
             
             try {
                 $conn = Database::getInstance();
+
+                // Validar que la cita sea programada para el futuro (no hoy ni el pasado)
+                $cita_date = date('Y-m-d', strtotime($fecha_hora));
+                $today_date = date('Y-m-d');
+                if ($cita_date <= $today_date) {
+                    throw new Exception("No se pueden programar citas para el mismo día ni para fechas pasadas. Deben agendarse con al menos un día de anticipación.");
+                }
+
+                // Validar longitud del motivo
+                if (empty(trim($motivo)) || strlen(trim($motivo)) < 5) {
+                    throw new Exception("El motivo de la consulta debe tener al menos 5 caracteres.");
+                }
 
                 // ── 1. Validar horario solo para citas normales ──────────────
                 if ($tipo !== 'emergencia') {

@@ -19,18 +19,35 @@ class FarmaciaController {
     public function create() {
         $this->checkAccess();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre'] ?? '';
-            $tipo = $_POST['tipo'] ?? '';
+            $nombre = trim($_POST['nombre'] ?? '');
+            $tipo = trim($_POST['tipo'] ?? '');
             $stock = (int)($_POST['stock'] ?? 0);
             $precio = (float)($_POST['precio_unitario'] ?? 0.0);
             $vencimiento = $_POST['vencimiento'] ?? null;
 
-            $medModel = new Medicamento();
-            if ($medModel->create($nombre, $tipo, $stock, $precio, $vencimiento)) {
-                log_activity($_SESSION['user_id'] ?? 1, "Crear Medicamento: $nombre", 'medicamentos');
-                header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+creado+con+exito');
-            } else {
-                header('Location: ' . BASE_URL . '/farmacia?error=Error+al+crear+medicamento');
+            try {
+                if (empty($nombre) || strlen($nombre) < 3) {
+                    throw new Exception("El nombre del medicamento debe tener al menos 3 caracteres.");
+                }
+                if (empty($tipo)) {
+                    throw new Exception("El tipo de medicamento es obligatorio.");
+                }
+                if ($stock < 0) {
+                    throw new Exception("El stock no puede ser negativo.");
+                }
+                if ($precio <= 0) {
+                    throw new Exception("El precio unitario debe ser mayor a cero.");
+                }
+
+                $medModel = new Medicamento();
+                if ($medModel->create($nombre, $tipo, $stock, $precio, $vencimiento)) {
+                    log_activity($_SESSION['user_id'] ?? 1, "Crear Medicamento: $nombre", 'medicamentos');
+                    header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+creado+con+exito');
+                } else {
+                    throw new Exception("Error al insertar el medicamento en la base de datos.");
+                }
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/farmacia?error=' . urlencode($e->getMessage()));
             }
             exit();
         }
