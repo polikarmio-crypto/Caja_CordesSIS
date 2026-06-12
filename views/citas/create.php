@@ -66,6 +66,22 @@ $medicosList = $conn->query("
                 </div>
 
                 <div class="form-group">
+                    <label>Tipo de Cita</label>
+                    <select name="tipo" id="tipoCita" required onchange="toggleHorarioInfo(this.value)" style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid transparent; background: var(--secondary-color);">
+                        <option value="normal">&#x1F4C5; Cita Normal (valida horario del médico)</option>
+                        <option value="emergencia">&#x1F6A8; Emergencia (atención 24/7 — sin restricción de horario)</option>
+                    </select>
+                </div>
+
+                <div id="infoHorarioNormal" style="padding: 12px 16px; background: var(--secondary-color); border-left: 4px solid #00ba8b; border-radius: 8px; margin-bottom: 16px; font-size: 0.9em; color: var(--text-muted);">
+                    &#x2139;&#xFE0F; Las citas normales se agendan dentro del turno laboral del médico (por lo general hasta las 17:00). Puedes ver los horarios registrados en <a href="<?= BASE_URL ?>/horarios" style="color: #00ba8b;">Horarios Médicos</a>.
+                </div>
+
+                <div id="infoHorarioEmergencia" style="display:none; padding: 12px 16px; background: #fff3cd; border-left: 4px solid #f59e0b; border-radius: 8px; margin-bottom: 16px; font-size: 0.9em; color: #92400e;">
+                    &#x26A0;&#xFE0F; <strong>Emergencia:</strong> Se puede agendar a cualquier hora del día. El médico será contactado independientemente de su turno habitual.
+                </div>
+
+                <div class="form-group">
                     <label>Fecha y Hora</label>
                     <input type="datetime-local" name="fecha_hora" required>
                 </div>
@@ -82,4 +98,10 @@ $medicosList = $conn->query("
         </div>
     </main>
 </div>
+<script>
+function toggleHorarioInfo(tipo) {
+    document.getElementById('infoHorarioNormal').style.display     = (tipo === 'normal')      ? 'block' : 'none';
+    document.getElementById('infoHorarioEmergencia').style.display = (tipo === 'emergencia')  ? 'block' : 'none';
+}
+</script>
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

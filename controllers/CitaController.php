@@ -21,51 +21,71 @@ class CitaController {
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $paciente_id = $_POST['paciente_id'] ?? '';
-            $medico_id = $_POST['medico_id'] ?? '';
-            $fecha_hora = $_POST['fecha_hora'] ?? '';
-            $motivo = $_POST['motivo'] ?? '';
+            $medico_id   = $_POST['medico_id']   ?? '';
+            $fecha_hora  = $_POST['fecha_hora']  ?? '';
+            $motivo      = $_POST['motivo']      ?? '';
+            $tipo        = $_POST['tipo']        ?? 'normal'; // 'normal' | 'emergencia'
 
             $citaModel = new Cita();
             
             try {
                 $conn = Database::getInstance();
-                
-                // 1. Validar horario de trabajo
-                $dia_semana_ing = date('l', strtotime($fecha_hora));
-                $dias = ['Monday'=>'lunes','Tuesday'=>'martes','Wednesday'=>'miercoles','Thursday'=>'jueves','Friday'=>'viernes','Saturday'=>'sabado','Sunday'=>'domingo'];
-                $dia_es = $dias[$dia_semana_ing];
-                $hora = date('H:i:s', strtotime($fecha_hora));
-                
-                $stmtH = $conn->prepare("SELECT * FROM horarios_medicos WHERE medico_id = :m AND dia_semana = :d AND hora_inicio <= :h AND hora_fin >= :h");
-                $stmtH->execute([':m'=>$medico_id, ':d'=>$dia_es, ':h'=>$hora]);
-                if($stmtH->rowCount() === 0) {
-                    throw new Exception("El médico no trabaja en el horario solicitado ($dia_es a las $hora).");
+
+                // ── 1. Validar horario solo para citas normales ──────────────
+                if ($tipo !== 'emergencia') {
+                    $dia_semana_ing = date('l', strtotime($fecha_hora));
+                    $dias = ['Monday'=>'lunes','Tuesday'=>'martes','Wednesday'=>'miercoles',
+                             'Thursday'=>'jueves','Friday'=>'viernes','Saturday'=>'sabado','Sunday'=>'domingo'];
+                    $dia_es = $dias[$dia_semana_ing];
+                    $hora   = date('H:i:s', strtotime($fecha_hora));
+
+                    // La cita puede comenzar hasta 30 min antes del fin de turno
+                    $stmtH = $conn->prepare("
+                        SELECT * FROM horarios_medicos
+                        WHERE medico_id  = :m
+                          AND dia_semana = :d
+                          AND hora_inicio <= :h
+                          AND (hora_fin   >= :h
+                               OR hora_fin >= CAST(:h AS TIME) - INTERVAL '30 minutes')
+                          AND activo = TRUE
+                    ");
+                    $stmtH->execute([':m' => $medico_id, ':d' => $dia_es, ':h' => $hora]);
+                    if ($stmtH->rowCount() === 0) {
+                        throw new Exception(
+                            "El médico no trabaja en el horario solicitado ($dia_es a las $hora). "
+                          . "Por favor elige un horario dentro de su turno, o selecciona tipo Emergencia para atención 24/7."
+                        );
+                    }
+
+                    // Validar ausencias médicas registradas
+                    $stmtAus = $conn->prepare("
+                        SELECT id, motivo FROM ausencias_medicos
+                        WHERE medico_id = :m
+                          AND :fecha_hora BETWEEN fecha_inicio AND fecha_fin
+                    ");
+                    $stmtAus->execute([':m' => $medico_id, ':fecha_hora' => $fecha_hora]);
+                    if ($stmtAus->rowCount() > 0) {
+                        $ausencia = $stmtAus->fetch();
+                        throw new Exception(
+                            "El médico no se encuentra disponible en este horario debido a una ausencia registrada ("
+                          . $ausencia['motivo'] . ")."
+                        );
+                    }
                 }
 
-                // Validar si hay una ausencia médica registrada en esa fecha/hora
-                $stmtAus = $conn->prepare("
-                    SELECT id, motivo FROM ausencias_medicos
-                    WHERE medico_id = :m 
-                      AND :fecha_hora BETWEEN fecha_inicio AND fecha_fin
-                ");
-                $stmtAus->execute([':m' => $medico_id, ':fecha_hora' => $fecha_hora]);
-                if ($stmtAus->rowCount() > 0) {
-                    $ausencia = $stmtAus->fetch();
-                    throw new Exception("El médico no se encuentra disponible en este horario debido a una ausencia registrada (" . $ausencia['motivo'] . ").");
-                }
-
-                // 2. Validar solapamiento (asumiendo citas de 30 mins)
+                // ── 2. Validar solapamiento (aplica a todos los tipos) ───────
                 $fecha_hora_fin = date('Y-m-d H:i:s', strtotime($fecha_hora . ' +30 minutes'));
                 $stmtOverlap = $conn->prepare("
                     SELECT id FROM citas 
                     WHERE medico_id = :m AND estado != 'cancelada'
                     AND (fecha_hora < :fin AND (fecha_hora + INTERVAL '30 minutes') > :inicio)
                 ");
-                $stmtOverlap->execute([':m'=>$medico_id, ':inicio'=>$fecha_hora, ':fin'=>$fecha_hora_fin]);
-                if($stmtOverlap->rowCount() > 0) {
+                $stmtOverlap->execute([':m' => $medico_id, ':inicio' => $fecha_hora, ':fin' => $fecha_hora_fin]);
+                if ($stmtOverlap->rowCount() > 0) {
                     throw new Exception("Solapamiento de agenda: El médico ya tiene una cita reservada a esa hora.");
                 }
 
+                // ── 3. Generar link de videollamada si aplica ────────────────
                 $modalidad = $_POST['modalidad'] ?? 'presencial';
                 $link_videollamada = null;
                 if ($modalidad === 'virtual') {
@@ -74,20 +94,18 @@ class CitaController {
                     $link_videollamada = "https://meet.google.com/" . $random_meet;
                 }
 
-                if ($citaModel->create($paciente_id, $medico_id, $fecha_hora, $motivo, $modalidad, $link_videollamada)) {
+                // ── 4. Registrar la cita ─────────────────────────────────────
+                if ($citaModel->create($paciente_id, $medico_id, $fecha_hora, $motivo, $modalidad, $link_videollamada, $tipo)) {
                     $user_id = $_SESSION['user_id'] ?? null;
-                    if($user_id) log_activity($user_id, 'Agendar Cita', 'citas');
-
+                    if ($user_id) log_activity($user_id, 'Agendar Cita (' . $tipo . ')', 'citas');
                     header('Location: ' . BASE_URL . '/citas?success=1');
                     exit();
                 }
             } catch (Exception $e) {
                 $error = "Error al agendar cita: " . $e->getMessage();
-                // Fetch patients and medics for the view again
                 require_once __DIR__ . '/../views/citas/create.php';
             }
         } else {
-            // Needed logic to fetch patients and doctors for select dropdowns
             require_once __DIR__ . '/../views/citas/create.php';
         }
     }
