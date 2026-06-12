@@ -98,7 +98,11 @@ class CitaController {
                 if ($citaModel->create($paciente_id, $medico_id, $fecha_hora, $motivo, $modalidad, $link_videollamada, $tipo)) {
                     $user_id = $_SESSION['user_id'] ?? null;
                     if ($user_id) log_activity($user_id, 'Agendar Cita (' . $tipo . ')', 'citas');
-                    header('Location: ' . BASE_URL . '/citas?success=1');
+                    if (($_SESSION['rol_nombre'] ?? '') === 'Paciente') {
+                        header('Location: ' . BASE_URL . '/dashboard?success=1');
+                    } else {
+                        header('Location: ' . BASE_URL . '/citas?success=1');
+                    }
                     exit();
                 }
             } catch (Exception $e) {

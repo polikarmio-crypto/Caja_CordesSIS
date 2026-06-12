@@ -14,6 +14,12 @@
             <?php endif; ?>
         </div>
 
+        <?php if (isset($_GET['success'])): ?>
+            <div style="padding: 15px; background: #dcfce7; color: #166534; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+                ✓ ¡Cita médica programada con éxito!
+            </div>
+        <?php endif; ?>
+
         <?php if ($rol === 'Administrativo' || $rol === 'Directivo'): ?>
 
         <!-- KPIs Row -->
