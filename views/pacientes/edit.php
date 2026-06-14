@@ -7,7 +7,7 @@
  <h1>Editar Perfil</h1>
  <p>Actualiza la información personal del asegurado.</p>
  </div>
- <a href="<?= BASE_URL ?>/dashboard" class="btn btn-outline">Volver al Dashboard</a>
+ <a href="<?= BASE_URL ?>/dashboard" class="btn btn-outline">Volver a Mi Portal</a>
  </div>
 
  <?php if (isset($success)): ?>

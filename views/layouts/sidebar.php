@@ -6,7 +6,7 @@
  Caja Cordes
  </div>
  <nav>
- <a href="<?= BASE_URL ?>/dashboard" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false ? 'active' : '' ?>">Dashboard</a>
+ <a href="<?= BASE_URL ?>/dashboard" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false ? 'active' : '' ?>">Mi Portal</a>
  
  <?php 
  $rol = $_SESSION['rol_nombre'] ?? '';
@@ -31,7 +31,6 @@
  <a href="<?= BASE_URL ?>/pacientes" class="nav-link <?= strpos($uri, 'paciente') !== false ? 'active' : '' ?>">Pacientes</a>
  <a href="<?= BASE_URL ?>/medicos" class="nav-link <?= strpos($uri, 'medico') !== false && strpos($uri, 'horario') === false && strpos($uri, 'ausencia') === false ? 'active' : '' ?>">Médicos</a>
  <a href="<?= BASE_URL ?>/citas" class="nav-link <?= strpos($uri, 'cita') !== false ? 'active' : '' ?>">Citas Médicas</a>
- <a href="<?= BASE_URL ?>/horarios" class="nav-link <?= strpos($uri, 'horario') !== false ? 'active' : '' ?>">Horarios Médicos</a>
  <a href="<?= BASE_URL ?>/hospitalizacion" class="nav-link <?= strpos($uri, 'hospitalizacion') !== false ? 'active' : '' ?>">Hospitalización (Camas)</a>
  <a href="<?= BASE_URL ?>/laboratorio" class="nav-link <?= strpos($uri, 'laboratorio') !== false ? 'active' : '' ?>">Laboratorio Clínico</a>
  <a href="<?= BASE_URL ?>/ausencias" class="nav-link <?= strpos($uri, 'ausencias') !== false ? 'active' : '' ?>">Ausencias Médicas</a>
@@ -89,11 +88,6 @@
  <?php if ($isLaboratorista): ?>
  <a href="<?= BASE_URL ?>/laboratorio" class="nav-link <?= strpos($uri, 'laboratorio') !== false ? 'active' : '' ?>">Laboratorio Clínico</a>
  <?php endif; ?>
- 
- <?php if ($rol === 'Paciente'): ?>
- <a href="<?= BASE_URL ?>/dashboard" class="nav-link <?= strpos($uri, 'dashboard') !== false ? 'active' : '' ?>">Mi Portal</a>
- <a href="<?= BASE_URL ?>/pacientes/edit" class="nav-link <?= strpos($uri, 'pacientes/edit') !== false ? 'active' : '' ?>">Mi Perfil</a>
- <?php endif; ?>
  </nav>
 
  <div style="margin-top:auto; padding:16px 12px; display:flex; flex-direction:column; gap:10px;">
@@ -123,10 +117,6 @@
  <?= htmlspecialchars($_SESSION['rol_nombre'] ?? '') ?>
  </p>
  </div>
-
- <a href="<?= BASE_URL ?>/logout" class="btn btn-outline" style="width:100%;text-align:center;">
- Cerrar Sesión
- </a>
  </div>
 
  </aside>

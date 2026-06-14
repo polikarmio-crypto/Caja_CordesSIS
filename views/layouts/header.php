@@ -36,11 +36,7 @@
  <span class="user-email"><?= htmlspecialchars($_SESSION['email'] ?? '') ?></span>
  <span class="user-role"><?= htmlspecialchars($_SESSION['rol_nombre'] ?? '') ?></span>
  </div>
- <?php if (($_SESSION['rol_nombre'] ?? '') === 'Paciente'): ?>
- <a href="<?= BASE_URL ?>/pacientes/edit" class="btn btn-header btn-outline">Ver Perfil</a>
- <?php else: ?>
- <a href="<?= BASE_URL ?>/password/change" class="btn btn-header btn-outline">Ver Perfil</a>
- <?php endif; ?>
+  <a href="<?= BASE_URL ?>/perfil" class="btn btn-header btn-outline">Ver Perfil</a>
  <a href="<?= BASE_URL ?>/logout" class="btn btn-header btn-logout">Cerrar Sesión</a>
  </div>
  </header>

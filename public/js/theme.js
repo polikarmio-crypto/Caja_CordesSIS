@@ -101,3 +101,67 @@ var ThemeManager = (function () {
     return { init: init, toggle: toggle, current: current, updateButton: updateButton };
 
 })();
+
+// Validación global de formularios
+document.addEventListener('DOMContentLoaded', function() {
+    var forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            var inputs = form.querySelectorAll('input, textarea, select');
+            var isValid = true;
+            var errorMsg = '';
+
+            for (var i = 0; i < inputs.length; i++) {
+                var input = inputs[i];
+                
+                if (input.type === 'hidden' || input.disabled || input.readOnly) {
+                    continue;
+                }
+
+                var tagName = input.tagName.toLowerCase();
+                if (tagName === 'input' || tagName === 'textarea') {
+                    if (input.type === 'text' || input.type === 'password' || input.type === 'email' || tagName === 'textarea') {
+                        var val = input.value;
+                        var trimmed = val.trim();
+
+                        // Validar campos obligatorios vacíos o con puros espacios
+                        if (input.hasAttribute('required') && trimmed === '') {
+                            isValid = false;
+                            errorMsg = 'Por favor complete todos los campos requeridos y no use solo espacios.';
+                            input.focus();
+                            break;
+                        }
+
+                        // Validar que no se llenen con una sola letra/dígito
+                        if (trimmed !== '') {
+                            if (trimmed.length < 2 && input.type !== 'file' && input.name !== 'puntuacion' && input.name !== 'cantidad[]') {
+                                isValid = false;
+                                errorMsg = 'Los campos de texto deben contener al menos 2 caracteres.';
+                                input.focus();
+                                break;
+                            }
+
+                            // Validar caracteres en campos de nombres y apellidos
+                            var nameAttr = (input.name || '').toLowerCase();
+                            var idAttr = (input.id || '').toLowerCase();
+                            if (nameAttr.includes('nombre') || nameAttr.includes('apellido') || idAttr.includes('nombre') || idAttr.includes('apellido')) {
+                                var nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'\-\.]+$/;
+                                if (!nameRegex.test(trimmed)) {
+                                    isValid = false;
+                                    errorMsg = 'Los nombres y apellidos solo pueden contener letras y espacios.';
+                                    input.focus();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+                alert(errorMsg);
+            }
+        });
+    });
+});

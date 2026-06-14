@@ -9,18 +9,31 @@ class CitaController {
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
         $perPage = 30;
 
+        $medico_id = null;
+        $paciente_id = null;
+
+        if (($_SESSION['rol_nombre'] ?? '') === 'Médico') {
+            $db = Database::getInstance();
+            $stmt = $db->prepare("SELECT id FROM medicos WHERE usuario_id = :uid");
+            $stmt->execute([':uid' => $_SESSION['user_id']]);
+            $medico_id = $stmt->fetchColumn() ?: -1;
+        } elseif (($_SESSION['rol_nombre'] ?? '') === 'Paciente') {
+            $paciente_id = $_SESSION['paciente_id'] ?? -1;
+        }
+
         $citaModel = new Cita();
-        $totalCitas = $citaModel->countAll($fecha_inicio, $fecha_fin);
+        $totalCitas = $citaModel->countAll($fecha_inicio, $fecha_fin, $medico_id, $paciente_id);
         $totalPages = ceil($totalCitas / $perPage);
 
-        $citas = $citaModel->findAll($fecha_inicio, $fecha_fin, $page, $perPage);
+        $citas = $citaModel->findAll($fecha_inicio, $fecha_fin, $page, $perPage, $medico_id, $paciente_id);
         
         require_once __DIR__ . '/../views/citas/index.php';
     }
 
     public function create() {
-        if (($_SESSION['rol_nombre'] ?? '') !== 'Paciente') {
-            header('Location: ' . BASE_URL . '/dashboard');
+        // Acceso: Pacientes, Administrativos, Directivos y Médicos pueden agendar citas
+        if (!isset($_SESSION['rol_nombre'])) {
+            header('Location: ' . BASE_URL . '/');
             exit();
         }
 
@@ -46,6 +59,15 @@ class CitaController {
                 // Validar longitud del motivo
                 if (empty(trim($motivo)) || strlen(trim($motivo)) < 5) {
                     throw new Exception("El motivo de la consulta debe tener al menos 5 caracteres.");
+                }
+
+                // ── Validar límite de 18:00 para citas normales ──────────────
+                if ($tipo !== 'emergencia') {
+                    $hora_cita = (int)date('H', strtotime($fecha_hora));
+                    $min_cita  = (int)date('i', strtotime($fecha_hora));
+                    if ($hora_cita > 18 || ($hora_cita === 18 && $min_cita > 0)) {
+                        throw new Exception("Las citas normales deben programarse antes de las 18:00. Para atención fuera de ese horario, seleccione tipo Emergencia.");
+                    }
                 }
 
                 // ── 1. Validar horario solo para citas normales ──────────────
@@ -140,6 +162,29 @@ class CitaController {
             
             try {
                 $conn->beginTransaction();
+
+                if ($_SESSION['rol_nombre'] === 'Médico') {
+                    $stmtMed = $conn->prepare("SELECT id FROM medicos WHERE usuario_id = :uid");
+                    $stmtMed->execute([':uid' => $_SESSION['user_id']]);
+                    $medico_id = $stmtMed->fetchColumn();
+
+                    $stmtCheck = $conn->prepare("SELECT medico_id FROM citas WHERE id = :id");
+                    $stmtCheck->execute([':id' => $cita_id]);
+                    $db_med_id = $stmtCheck->fetchColumn();
+
+                    if ($db_med_id != $medico_id) {
+                        die('Acceso denegado.');
+                    }
+                } elseif ($_SESSION['rol_nombre'] === 'Paciente') {
+                    $pid = $_SESSION['paciente_id'] ?? 0;
+                    $stmtCheck = $conn->prepare("SELECT paciente_id FROM citas WHERE id = :id");
+                    $stmtCheck->execute([':id' => $cita_id]);
+                    $db_pac_id = $stmtCheck->fetchColumn();
+
+                    if ($db_pac_id != $pid) {
+                        die('Acceso denegado.');
+                    }
+                }
                 
                 // Actualizar estado de la cita
                 $stmt = $conn->prepare("UPDATE citas SET estado = 'cancelada' WHERE id = :id");
@@ -187,8 +232,24 @@ class CitaController {
     public function completar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cita_id'])) {
             $conn = Database::getInstance();
+            $citaId = $_POST['cita_id'];
+
+            if ($_SESSION['rol_nombre'] === 'Médico') {
+                $stmtMed = $conn->prepare("SELECT id FROM medicos WHERE usuario_id = :uid");
+                $stmtMed->execute([':uid' => $_SESSION['user_id']]);
+                $medico_id = $stmtMed->fetchColumn();
+
+                $stmtCheck = $conn->prepare("SELECT medico_id FROM citas WHERE id = :id");
+                $stmtCheck->execute([':id' => $citaId]);
+                $db_med_id = $stmtCheck->fetchColumn();
+
+                if ($db_med_id != $medico_id) {
+                    die('Acceso denegado.');
+                }
+            }
+
             $stmt = $conn->prepare("UPDATE citas SET estado = 'completada' WHERE id = :id AND estado = 'pendiente'");
-            $stmt->bindParam(':id', $_POST['cita_id']);
+            $stmt->bindParam(':id', $citaId);
             $stmt->execute();
             log_activity($_SESSION['user_id'] ?? 1, 'Completar Cita', 'citas');
             header('Location: ' . BASE_URL . '/citas?success=Cita+marcada+como+completada');
@@ -207,7 +268,7 @@ class CitaController {
         $conn = Database::getInstance();
 
         $stmt = $conn->prepare("
-            SELECT c.id, c.fecha_hora, c.motivo, c.estado, c.paciente_id,
+            SELECT c.id, c.fecha_hora, c.motivo, c.estado, c.paciente_id, c.medico_id,
                    p.nombres AS pac_nombres, p.apellidos AS pac_apellidos, p.ci,
                    up.email AS pac_email,
                    um.email AS med_email,
@@ -232,6 +293,14 @@ class CitaController {
         if ($_SESSION['rol_nombre'] === 'Paciente') {
             $pid = $_SESSION['paciente_id'] ?? 0;
             if ($cita['paciente_id'] != $pid) {
+                die('Acceso denegado.');
+            }
+        } elseif ($_SESSION['rol_nombre'] === 'Médico') {
+            $stmtMed = $conn->prepare("SELECT id FROM medicos WHERE usuario_id = :uid");
+            $stmtMed->execute([':uid' => $_SESSION['user_id']]);
+            $medico_id = $stmtMed->fetchColumn();
+
+            if ($cita['medico_id'] != $medico_id) {
                 die('Acceso denegado.');
             }
         }
@@ -304,6 +373,86 @@ class CitaController {
         $pdf->Cell(0, 6, 'Este comprobante es valido solo para la cita indicada.', 0, 1, 'C');
 
         $pdf->Output('D', 'comprobante_cita_' . $cita_id . '.pdf');
+        exit();
+    }
+    /**
+     * AJAX: devuelve médicos por especialidad_id
+     * GET /api/medicos-por-especialidad?especialidad_id=X
+     */
+    public function medicosPorEspecialidad() {
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'No autorizado']);
+            exit();
+        }
+
+        $especialidad_id = intval($_GET['especialidad_id'] ?? 0);
+        $conn = Database::getInstance();
+
+        if ($especialidad_id === 0) {
+            // Devuelve todos los médicos
+            $stmt = $conn->query("
+                SELECT m.id,
+                       COALESCE(u.nombres || ' ' || u.apellidos, u.email) AS nombre,
+                       STRING_AGG(DISTINCT e.nombre, ', ') AS especialidad,
+                       (
+                           SELECT STRING_AGG(hm.dia_semana || ' (' ||
+                               TO_CHAR(hm.hora_inicio,'HH24:MI') || '-' ||
+                               TO_CHAR(hm.hora_fin,'HH24:MI') || ')', ', '
+                               ORDER BY CASE hm.dia_semana
+                                   WHEN 'lunes' THEN 1 WHEN 'martes' THEN 2
+                                   WHEN 'miercoles' THEN 3 WHEN 'jueves' THEN 4
+                                   WHEN 'viernes' THEN 5 WHEN 'sabado' THEN 6
+                                   ELSE 7 END)
+                           FROM horarios_medicos hm WHERE hm.medico_id = m.id AND hm.activo = TRUE
+                       ) AS horarios
+                FROM medicos m
+                JOIN usuarios u ON m.usuario_id = u.id
+                LEFT JOIN medico_especialidades me ON m.id = me.medico_id
+                LEFT JOIN especialidades e ON me.especialidad_id = e.id
+                WHERE (m.activo IS NULL OR m.activo = TRUE)
+                GROUP BY m.id, u.email, u.nombres, u.apellidos
+                ORDER BY nombre
+            ");
+        } else {
+            $stmt = $conn->prepare("
+                SELECT m.id,
+                       COALESCE(u.nombres || ' ' || u.apellidos, u.email) AS nombre,
+                       STRING_AGG(DISTINCT e.nombre, ', ') AS especialidad,
+                       (
+                           SELECT STRING_AGG(hm.dia_semana || ' (' ||
+                               TO_CHAR(hm.hora_inicio,'HH24:MI') || '-' ||
+                               TO_CHAR(hm.hora_fin,'HH24:MI') || ')', ', '
+                               ORDER BY CASE hm.dia_semana
+                                   WHEN 'lunes' THEN 1 WHEN 'martes' THEN 2
+                                   WHEN 'miercoles' THEN 3 WHEN 'jueves' THEN 4
+                                   WHEN 'viernes' THEN 5 WHEN 'sabado' THEN 6
+                                   ELSE 7 END)
+                           FROM horarios_medicos hm WHERE hm.medico_id = m.id AND hm.activo = TRUE
+                       ) AS horarios
+                FROM medicos m
+                JOIN usuarios u ON m.usuario_id = u.id
+                JOIN medico_especialidades me ON m.id = me.medico_id
+                LEFT JOIN especialidades e ON me.especialidad_id = e.id
+                WHERE (me.especialidad_id = :esp_id OR EXISTS (
+                    SELECT 1 FROM especialidades sub
+                    WHERE sub.id = me.especialidad_id AND sub.parent_id = :esp_id2
+                ))
+                AND (m.activo IS NULL OR m.activo = TRUE)
+                GROUP BY m.id, u.email, u.nombres, u.apellidos
+                ORDER BY nombre
+            ");
+            $stmt->execute([':esp_id' => $especialidad_id, ':esp_id2' => $especialidad_id]);
+        }
+
+        if ($especialidad_id === 0) {
+            $medicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $medicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($medicos);
         exit();
     }
 }

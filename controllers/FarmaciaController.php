@@ -11,8 +11,13 @@ class FarmaciaController {
 
     public function index() {
         $this->checkAccess();
+        $q = trim($_GET['q'] ?? '');
         $medModel = new Medicamento();
-        $medicamentos = $medModel->findAll();
+        if ($q !== '') {
+            $medicamentos = $medModel->search($q);
+        } else {
+            $medicamentos = $medModel->findAll();
+        }
         require_once __DIR__ . '/../views/farmacia/index.php';
     }
 
@@ -24,6 +29,7 @@ class FarmaciaController {
             $stock = (int)($_POST['stock'] ?? 0);
             $precio = (float)($_POST['precio_unitario'] ?? 0.0);
             $vencimiento = $_POST['vencimiento'] ?? null;
+            $codigo = trim($_POST['codigo_identificacion'] ?? '');
 
             try {
                 if (empty($nombre) || strlen($nombre) < 3) {
@@ -38,10 +44,18 @@ class FarmaciaController {
                 if ($precio <= 0) {
                     throw new Exception("El precio unitario debe ser mayor a cero.");
                 }
+                if (empty($codigo) || strlen($codigo) < 3) {
+                    throw new Exception("El código de identificación del fármaco es obligatorio y debe tener al menos 3 caracteres.");
+                }
 
                 $medModel = new Medicamento();
-                if ($medModel->create($nombre, $tipo, $stock, $precio, $vencimiento)) {
-                    log_activity($_SESSION['user_id'] ?? 1, "Crear Medicamento: $nombre", 'medicamentos');
+                $existing = $medModel->findByCodigo($codigo);
+                if ($existing) {
+                    throw new Exception("Ya existe un medicamento registrado con el código de identificación $codigo.");
+                }
+
+                if ($medModel->create($nombre, $tipo, $stock, $precio, $vencimiento, $codigo)) {
+                    log_activity($_SESSION['user_id'] ?? 1, "Crear Medicamento: $nombre ($codigo)", 'medicamentos');
                     header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+creado+con+exito');
                 } else {
                     throw new Exception("Error al insertar el medicamento en la base de datos.");
@@ -165,6 +179,52 @@ class FarmaciaController {
 
         $pdf->Output('I', 'comprobante_despacho_' . $receta['receta_id'] . '.pdf');
         exit();
+    }
+
+    public function softDelete() {
+        $this->checkAccess();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $medModel = new Medicamento();
+            $medModel->softDelete($_POST['id']);
+            if (function_exists('log_activity')) {
+                log_activity($_SESSION['user_id'] ?? 1, 'Baja Lógica Medicamento', 'medicamentos');
+            }
+            header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+dado+de+baja+con+exito');
+            exit();
+        }
+    }
+
+    public function restore() {
+        $this->checkAccess();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $medModel = new Medicamento();
+            $medModel->restore($_POST['id']);
+            if (function_exists('log_activity')) {
+                log_activity($_SESSION['user_id'] ?? 1, 'Restaurar Medicamento', 'medicamentos');
+            }
+            header('Location: ' . BASE_URL . '/farmacia?success=Medicamento+restaurado+con+exito');
+            exit();
+        }
+    }
+
+    public function hardDelete() {
+        $this->checkAccess();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST['confirm_delete'])) {
+            $medModel = new Medicamento();
+            $medModel->hardDelete($_POST['id']);
+            if (function_exists('log_activity')) {
+                log_activity($_SESSION['user_id'] ?? 1, 'Eliminación Permanente Medicamento', 'medicamentos');
+            }
+            header('Location: ' . BASE_URL . '/farmacia/bajas?success=Medicamento+eliminado+permanentemente');
+            exit();
+        }
+    }
+
+    public function bajas() {
+        $this->checkAccess();
+        $medModel = new Medicamento();
+        $medicamentos = $medModel->findAllInactive();
+        require_once __DIR__ . '/../views/farmacia/bajas.php';
     }
 }
 ?>

@@ -47,7 +47,7 @@
  <?= htmlspecialchars($f['nombres'] . ' ' . $f['apellidos']) ?><br>
  <small style="color: var(--text-muted);">CI: <?= htmlspecialchars($f['ci']) ?></small>
  </td>
- <td style="padding: 12px; font-weight: bold;">$<?= number_format($f['total'], 2) ?></td>
+ <td style="padding: 12px; font-weight: bold;">Bs. <?= number_format($f['total'], 2) ?></td>
  <td style="padding: 12px;">
  <?php
  $color = $f['estado'] === 'pagada' ? '#16a34a' : ($f['estado'] === 'anulada' ? '#dc2626' : '#ca8a04');

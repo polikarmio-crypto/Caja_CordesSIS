@@ -6,7 +6,7 @@ class Cita {
         $this->conn = Database::getInstance();
     }
 
-    public function findAll($fecha_inicio = null, $fecha_fin = null, $page = null, $perPage = 30) {
+    public function findAll($fecha_inicio = null, $fecha_fin = null, $page = null, $perPage = 30, $medico_id = null, $paciente_id = null) {
         $sql = "
             SELECT c.*, 
                    p.nombres as paciente_nombres, p.apellidos as paciente_apellidos,
@@ -28,6 +28,16 @@ class Cita {
         if (!empty($fecha_fin)) {
             $conditions[] = "DATE(c.fecha_hora) <= :fecha_fin";
             $params[':fecha_fin'] = $fecha_fin;
+        }
+
+        if (!empty($medico_id)) {
+            $conditions[] = "c.medico_id = :medico_id";
+            $params[':medico_id'] = $medico_id;
+        }
+
+        if (!empty($paciente_id)) {
+            $conditions[] = "c.paciente_id = :paciente_id";
+            $params[':paciente_id'] = $paciente_id;
         }
         
         if (!empty($conditions)) {
@@ -55,7 +65,7 @@ class Cita {
         return $stmt->fetchAll();
     }
 
-    public function countAll($fecha_inicio = null, $fecha_fin = null) {
+    public function countAll($fecha_inicio = null, $fecha_fin = null, $medico_id = null, $paciente_id = null) {
         $sql = "
             SELECT COUNT(*)
             FROM citas c
@@ -75,6 +85,16 @@ class Cita {
         if (!empty($fecha_fin)) {
             $conditions[] = "DATE(c.fecha_hora) <= :fecha_fin";
             $params[':fecha_fin'] = $fecha_fin;
+        }
+
+        if (!empty($medico_id)) {
+            $conditions[] = "c.medico_id = :medico_id";
+            $params[':medico_id'] = $medico_id;
+        }
+
+        if (!empty($paciente_id)) {
+            $conditions[] = "c.paciente_id = :paciente_id";
+            $params[':paciente_id'] = $paciente_id;
         }
         
         if (!empty($conditions)) {

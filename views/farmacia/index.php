@@ -13,6 +13,20 @@
  </div>
  </div>
 
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px;">
+     <form action="<?= BASE_URL ?>/farmacia" method="GET" style="display: flex; gap: 10px; width: 400px; margin: 0;">
+         <input type="text" name="q" placeholder="Buscar por nombre o código..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" 
+                style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--secondary-color);">
+         <button type="submit" class="btn">Buscar</button>
+         <?php if (!empty($_GET['q'])): ?>
+             <a href="<?= BASE_URL ?>/farmacia" class="btn btn-outline">Limpiar</a>
+         <?php endif; ?>
+     </form>
+     <div>
+         <a href="<?= BASE_URL ?>/farmacia/bajas" class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;">Ver Bajas</a>
+     </div>
+ </div>
+
  <?php if (isset($_GET['success'])): ?>
  <div style="padding: 15px; background: #dcfce7; color: #166534; border-radius: 8px; margin-bottom: 20px;">
  <?= htmlspecialchars($_GET['success']) ?>
@@ -28,18 +42,18 @@
  <table style="width: 100%; text-align: left; border-collapse: collapse;">
  <thead>
  <tr style="border-bottom: 2px solid var(--border-color);">
- <th style="padding: 12px;">ID</th>
+ <th style="padding: 12px;">Código</th>
  <th style="padding: 12px;">Medicamento</th>
  <th style="padding: 12px;">Tipo</th>
  <th style="padding: 12px;">Stock Actual</th>
- <th style="padding: 12px;">Precio Unitario ($)</th>
+ <th style="padding: 12px;">Precio Unitario (Bs.)</th>
  <th style="padding: 12px;">Acciones</th>
  </tr>
  </thead>
  <tbody>
  <?php foreach($medicamentos as $m): ?>
  <tr style="border-bottom: 1px solid var(--border-color);">
- <td style="padding: 12px;"><?= htmlspecialchars($m['id']) ?></td>
+ <td style="padding: 12px; font-family: monospace; font-weight: bold;"><?= htmlspecialchars($m['codigo_identificacion'] ?? 'N/A') ?></td>
  <td style="padding: 12px;"><strong><?= htmlspecialchars($m['nombre']) ?></strong></td>
  <td style="padding: 12px;"><?= htmlspecialchars($m['tipo'] ?? 'N/A') ?></td>
  <td style="padding: 12px;">
@@ -47,12 +61,21 @@
  <?= htmlspecialchars($m['stock']) ?>
  </span>
  </td>
- <td style="padding: 12px;">$<?= number_format($m['precio_unitario'], 2) ?></td>
+ <td style="padding: 12px;">Bs. <?= number_format($m['precio_unitario'], 2) ?></td>
  <td style="padding: 12px;">
- <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8em;" onclick="openUpdateModal(<?= htmlspecialchars(json_encode($m)) ?>)">Actualizar</button>
+ <div style="display: flex; gap: 5px;">
+     <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8em;" onclick="openUpdateModal(<?= htmlspecialchars(json_encode($m)) ?>)">Actualizar</button>
+     <form action="<?= BASE_URL ?>/farmacia/baja" method="POST" style="display: inline; margin: 0;" onsubmit="return confirm('¿Está seguro de dar de baja este medicamento?');">
+         <input type="hidden" name="id" value="<?= $m['id'] ?>">
+         <button type="submit" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8em; color: #dc2626; border-color: #dc2626;">Eliminar</button>
+     </form>
+ </div>
  </td>
  </tr>
  <?php endforeach; ?>
+ <?php if (empty($medicamentos)): ?>
+ <tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No se encontraron medicamentos.</td></tr>
+ <?php endif; ?>
  </tbody>
  </table>
  </div>
@@ -72,7 +95,7 @@
  <input type="number" name="stock" id="med_stock" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
  </div>
  <div class="form-group" style="margin-bottom: 20px;">
- <label>Precio Unitario ($)</label>
+ <label>Precio Unitario (Bs.)</label>
  <input type="number" step="0.01" name="precio_unitario" id="med_precio" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
  </div>
 
@@ -90,6 +113,10 @@
  <h2 style="margin-bottom:15px; color:var(--primary-color);">Añadir Medicamento</h2>
  <form action="<?= BASE_URL ?>/farmacia/create" method="POST">
  <div class="form-group" style="margin-bottom: 15px;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Código de Identificación</label>
+ <input type="text" name="codigo_identificacion" placeholder="Ej. MED-020" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ </div>
+ <div class="form-group" style="margin-bottom: 15px;">
  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Nombre del Medicamento</label>
  <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
  </div>
@@ -102,7 +129,7 @@
  <input type="number" name="stock" value="0" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
  </div>
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Precio Unitario ($)</label>
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Precio Unitario (Bs.)</label>
  <input type="number" step="0.01" name="precio_unitario" value="0.00" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
  </div>
  <div class="form-group" style="margin-bottom: 20px;">

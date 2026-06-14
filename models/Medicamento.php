@@ -7,7 +7,13 @@ class Medicamento {
     }
 
     public function findAll() {
-        $stmt = $this->conn->prepare("SELECT * FROM medicamentos ORDER BY nombre");
+        $stmt = $this->conn->prepare("SELECT * FROM medicamentos WHERE activo = TRUE ORDER BY nombre");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function findAllInactive() {
+        $stmt = $this->conn->prepare("SELECT * FROM medicamentos WHERE activo = FALSE ORDER BY nombre");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -18,14 +24,45 @@ class Medicamento {
         return $stmt->fetch();
     }
 
+    public function findByCodigo($codigo) {
+        $stmt = $this->conn->prepare("SELECT * FROM medicamentos WHERE codigo_identificacion = :cod AND activo = TRUE");
+        $stmt->execute([':cod' => $codigo]);
+        return $stmt->fetch();
+    }
+
+    public function search($query) {
+        $stmt = $this->conn->prepare("
+            SELECT * FROM medicamentos 
+            WHERE (nombre ILIKE :q OR codigo_identificacion ILIKE :q) AND activo = TRUE 
+            ORDER BY nombre
+        ");
+        $stmt->execute([':q' => "%" . $query . "%"]);
+        return $stmt->fetchAll();
+    }
+
     public function updateStockAndPrice($id, $stock, $precio) {
         $stmt = $this->conn->prepare("UPDATE medicamentos SET stock = :s, precio_unitario = :p WHERE id = :id");
         return $stmt->execute([':s' => $stock, ':p' => $precio, ':id' => $id]);
     }
 
-    public function create($nombre, $tipo, $stock, $precio, $vencimiento) {
-        $stmt = $this->conn->prepare("INSERT INTO medicamentos (nombre, tipo, stock, precio_unitario, vencimiento) VALUES (:n, :t, :s, :p, :v)");
-        return $stmt->execute([':n' => $nombre, ':t' => $tipo, ':s' => $stock, ':p' => $precio, ':v' => $vencimiento]);
+    public function create($nombre, $tipo, $stock, $precio, $vencimiento, $codigo) {
+        $stmt = $this->conn->prepare("INSERT INTO medicamentos (nombre, tipo, stock, precio_unitario, vencimiento, codigo_identificacion) VALUES (:n, :t, :s, :p, :v, :c)");
+        return $stmt->execute([':n' => $nombre, ':t' => $tipo, ':s' => $stock, ':p' => $precio, ':v' => $vencimiento, ':c' => $codigo]);
+    }
+
+    public function softDelete($id) {
+        $stmt = $this->conn->prepare("UPDATE medicamentos SET activo = FALSE WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    public function restore($id) {
+        $stmt = $this->conn->prepare("UPDATE medicamentos SET activo = TRUE WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    public function hardDelete($id) {
+        $stmt = $this->conn->prepare("DELETE FROM medicamentos WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
     }
 
     // Para despacho

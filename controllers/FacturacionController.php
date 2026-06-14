@@ -65,14 +65,14 @@ class FacturacionController {
         foreach ($factura['detalles'] as $d) {
             $pdf->Cell(90, 10, utf8_decode($d['concepto']), 1);
             $pdf->Cell(30, 10, $d['cantidad'], 1, 0, 'C');
-            $pdf->Cell(35, 10, '$' . number_format($d['precio_unitario'], 2), 1, 0, 'R');
-            $pdf->Cell(35, 10, '$' . number_format($d['subtotal'], 2), 1, 1, 'R');
+            $pdf->Cell(35, 10, 'Bs. ' . number_format($d['precio_unitario'], 2), 1, 0, 'R');
+            $pdf->Cell(35, 10, 'Bs. ' . number_format($d['subtotal'], 2), 1, 1, 'R');
         }
         
         // Total
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(155, 10, 'TOTAL A PAGAR', 1, 0, 'R');
-        $pdf->Cell(35, 10, '$' . number_format($factura['total'], 2), 1, 1, 'R');
+        $pdf->Cell(35, 10, 'Bs. ' . number_format($factura['total'], 2), 1, 1, 'R');
         
         $pdf->Output('I', 'factura_' . $factura['id'] . '.pdf');
         exit();
