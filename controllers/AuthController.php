@@ -128,15 +128,20 @@ class AuthController {
     }
 
     public function showChangePassword() {
-        $token = $_GET['token'] ?? '';
-        $userModel = new User();
-        $user = $userModel->verifyResetToken($token);
-
-        if ($user) {
+        if (isset($_SESSION['user_id'])) {
+            $token = '';
             require_once '../views/auth/change_password.php';
         } else {
-            $error = "El enlace de recuperación es inválido o ha expirado.";
-            require_once '../views/auth/reset.php';
+            $token = $_GET['token'] ?? '';
+            $userModel = new User();
+            $user = $userModel->verifyResetToken($token);
+
+            if ($user) {
+                require_once '../views/auth/change_password.php';
+            } else {
+                $error = "El enlace de recuperación es inválido o ha expirado.";
+                require_once '../views/auth/reset.php';
+            }
         }
     }
 
@@ -146,20 +151,34 @@ class AuthController {
             $password = $_POST['password'] ?? '';
             
             $userModel = new User();
-            $user = $userModel->verifyResetToken($token);
-
-            if ($user) {
+            
+            if (isset($_SESSION['user_id'])) {
+                $userId = $_SESSION['user_id'];
                 $hash = password_hash($password, PASSWORD_BCRYPT);
-                if ($userModel->updatePassword($user['id'], $hash)) {
+                if ($userModel->updatePassword($userId, $hash)) {
                     if (function_exists('log_activity')) {
-                        log_activity($user['id'], 'Restableció su contraseña exitosamente', 'usuarios');
+                        log_activity($userId, 'Cambió su contraseña desde su perfil', 'usuarios');
                     }
-                    header('Location: ' . BASE_URL . '/?success=Contraseña+actualizada+correctamente');
+                    header('Location: ' . BASE_URL . '/dashboard?success=Contraseña+actualizada+correctamente');
                     exit;
                 }
+                $error = "Error al actualizar la contraseña.";
+                require_once '../views/auth/change_password.php';
+            } else {
+                $user = $userModel->verifyResetToken($token);
+                if ($user) {
+                    $hash = password_hash($password, PASSWORD_BCRYPT);
+                    if ($userModel->updatePassword($user['id'], $hash)) {
+                        if (function_exists('log_activity')) {
+                            log_activity($user['id'], 'Restableció su contraseña exitosamente', 'usuarios');
+                        }
+                        header('Location: ' . BASE_URL . '/?success=Contraseña+actualizada+correctamente');
+                        exit;
+                    }
+                }
+                $error = "Error al actualizar la contraseña o el token es inválido.";
+                require_once '../views/auth/reset.php';
             }
-            $error = "Error al actualizar la contraseña o el token es inválido.";
-            require_once '../views/auth/reset.php';
         }
     }
 
