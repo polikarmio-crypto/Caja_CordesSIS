@@ -60,9 +60,47 @@ class PacienteController {
             $telefono = $_POST['telefono'] ?? '';
 
             $conn = Database::getInstance();
-            $conn->beginTransaction();
 
             try {
+                $nombres = trim($nombres);
+                $apellidos = trim($apellidos);
+                $ci = trim($ci);
+                $email = trim($email);
+
+                // Validar nombres
+                if (empty($nombres) || strlen($nombres) < 2 || !preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-'\.]+$/u", $nombres)) {
+                    throw new Exception("El nombre debe tener al menos 2 caracteres y contener solo letras.");
+                }
+                // Validar apellidos
+                if (empty($apellidos) || strlen($apellidos) < 2 || !preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-'\.]+$/u", $apellidos)) {
+                    throw new Exception("El apellido debe tener al menos 2 caracteres y contener solo letras.");
+                }
+                // Validar CI
+                if (empty($ci) || strlen($ci) < 5 || !preg_match("/^[a-zA-Z0-9\-]+$/", $ci)) {
+                    throw new Exception("El documento de identidad (CI) debe tener al menos 5 caracteres alfanuméricos.");
+                }
+                // Validar email
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    throw new Exception("El correo electrónico no es válido.");
+                }
+                // Validar password
+                if (empty($password) || strlen($password) < 4) {
+                    throw new Exception("La contraseña debe tener al menos 4 caracteres.");
+                }
+                // Validar teléfono (opcional)
+                if (!empty($telefono) && (strlen($telefono) < 7 || !preg_match("/^\+?[0-9\s\-]{7,15}$/", $telefono))) {
+                    throw new Exception("El número de teléfono debe tener entre 7 y 15 dígitos.");
+                }
+                // Validar fecha de nacimiento
+                if (empty($fecha_nac)) {
+                    throw new Exception("La fecha de nacimiento es obligatoria.");
+                }
+                $birthDate = strtotime($fecha_nac);
+                if ($birthDate === false || $birthDate > time() || $birthDate < strtotime('1900-01-01')) {
+                    throw new Exception("La fecha de nacimiento no es coherente.");
+                }
+
+                $conn->beginTransaction();
                 // Obtener ID del rol 'Paciente' de forma dinámica para evitar asignaciones erróneas
                 $stmtRol = $conn->prepare("SELECT id FROM roles WHERE nombre = 'Paciente' LIMIT 1");
                 $stmtRol->execute();
@@ -89,7 +127,9 @@ class PacienteController {
                 header('Location: ' . BASE_URL . '/pacientes?success=1');
                 exit();
             } catch (Exception $e) {
-                $conn->rollBack();
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
                 $error = "Error al crear paciente: " . $e->getMessage();
                 require_once __DIR__ . '/../views/pacientes/create.php';
             }
@@ -157,6 +197,35 @@ class PacienteController {
             $telefono  = trim($_POST['telefono'] ?? '');
 
             try {
+                $nombres   = trim($nombres);
+                $apellidos = trim($apellidos);
+                $ci        = trim($ci);
+
+                // Validar nombres
+                if (empty($nombres) || strlen($nombres) < 2 || !preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-'\.]+$/u", $nombres)) {
+                    throw new Exception("El nombre debe tener al menos 2 caracteres y contener solo letras.");
+                }
+                // Validar apellidos
+                if (empty($apellidos) || strlen($apellidos) < 2 || !preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-'\.]+$/u", $apellidos)) {
+                    throw new Exception("El apellido debe tener al menos 2 caracteres y contener solo letras.");
+                }
+                // Validar CI
+                if (empty($ci) || strlen($ci) < 5 || !preg_match("/^[a-zA-Z0-9\-]+$/", $ci)) {
+                    throw new Exception("El documento de identidad (CI) debe tener al menos 5 caracteres alfanuméricos.");
+                }
+                // Validar teléfono (opcional)
+                if (!empty($telefono) && (strlen($telefono) < 7 || !preg_match("/^\+?[0-9\s\-]{7,15}$/", $telefono))) {
+                    throw new Exception("El número de teléfono debe tener entre 7 y 15 dígitos.");
+                }
+                // Validar fecha de nacimiento
+                if (empty($fecha_nac)) {
+                    throw new Exception("La fecha de nacimiento es obligatoria.");
+                }
+                $birthDate = strtotime($fecha_nac);
+                if ($birthDate === false || $birthDate > time() || $birthDate < strtotime('1900-01-01')) {
+                    throw new Exception("La fecha de nacimiento no es coherente.");
+                }
+
                 $conn->beginTransaction();
 
                 // Actualizar datos en tabla pacientes
@@ -189,7 +258,9 @@ class PacienteController {
                 $stmt2->execute([':id' => $paciente['id']]);
                 $paciente = $stmt2->fetch(PDO::FETCH_ASSOC);
             } catch (Exception $e) {
-                $conn->rollBack();
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
                 $error = 'Error al actualizar: ' . $e->getMessage();
             }
         }

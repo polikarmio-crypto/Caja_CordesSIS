@@ -74,18 +74,34 @@ class InsumoController {
         $insumoModel = new Insumo();
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre'] ?? '';
-            $desc = $_POST['descripcion'] ?? '';
+            $nombre = trim($_POST['nombre'] ?? '');
+            $desc = trim($_POST['descripcion'] ?? '');
             $precio = $_POST['precio_unitario'] ?? 0;
             $cant = $_POST['cantidad'] ?? 0;
             $cat = $_POST['id_categoria'] ?? null;
 
-            if ($insumoModel->create($nombre, $desc, $precio, $cant, $cat)) {
-                if (function_exists('log_activity')) {
-                    log_activity($_SESSION['user_id'] ?? 1, 'Crear Insumo', 'insumos');
+            try {
+                if (empty($nombre) || strlen($nombre) < 3) {
+                    throw new Exception("El nombre del insumo debe tener al menos 3 caracteres.");
                 }
-                header('Location: ' . BASE_URL . '/insumo?success=Insumo+creado');
-                exit();
+                if (floatval($precio) <= 0) {
+                    throw new Exception("El precio unitario debe ser mayor a cero.");
+                }
+                if (intval($cant) < 0) {
+                    throw new Exception("La cantidad no puede ser negativa.");
+                }
+
+                if ($insumoModel->create($nombre, $desc, $precio, $cant, $cat)) {
+                    if (function_exists('log_activity')) {
+                        log_activity($_SESSION['user_id'] ?? 1, 'Crear Insumo', 'insumos');
+                    }
+                    header('Location: ' . BASE_URL . '/insumo?success=Insumo+creado');
+                    exit();
+                } else {
+                    throw new Exception("Error al guardar el insumo en la base de datos.");
+                }
+            } catch (Exception $e) {
+                $error = "Error al crear insumo: " . $e->getMessage();
             }
         }
         

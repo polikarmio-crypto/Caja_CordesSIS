@@ -58,6 +58,9 @@ $router->add('GET', '/password/change', ['AuthController', 'showChangePassword']
 $router->add('POST', '/password/change', ['AuthController', 'changePassword']);
 $router->add('GET', '/login/2fa', ['AuthController', 'show2FA']);
 $router->add('POST', '/login/2fa', ['AuthController', 'verify2FA']);
+$router->add('GET', '/perfil', ['AuthController', 'showProfile']);
+$router->add('POST', '/perfil/edit', ['AuthController', 'updateProfile']);
+$router->add('POST', '/perfil/verify', ['AuthController', 'verifyPasswordAjax']);
 
 // Dashboard
 $router->add('GET', '/dashboard', ['DashboardController', 'index']);
@@ -93,6 +96,7 @@ $router->add('POST', '/citas/create', ['CitaController', 'create']);
 $router->add('POST', '/citas/cancel', ['CitaController', 'cancel']);
 $router->add('POST', '/citas/completar', ['CitaController', 'completar']);
 $router->add('GET', '/citas/comprobante', ['CitaController', 'comprobantePdf']); // RF-090
+$router->add('GET', '/api/medicos-por-especialidad', ['CitaController', 'medicosPorEspecialidad']);
 
 // Reportes
 $router->add('GET', '/reportes/citas', ['ReporteController', 'export_citas']);
@@ -125,10 +129,15 @@ $router->add('POST', '/laboratorio/create', ['LaboratorioController', 'create'])
 
 // Farmacia
 $router->add('GET', '/farmacia', ['FarmaciaController', 'index']);
+$router->add('POST', '/farmacia/create', ['FarmaciaController', 'create']);
 $router->add('POST', '/farmacia/update', ['FarmaciaController', 'update']);
 $router->add('GET', '/farmacia/recetas', ['FarmaciaController', 'recetas']);
 $router->add('POST', '/farmacia/despachar', ['FarmaciaController', 'despachar']);
 $router->add('GET', '/farmacia/comprobante', ['FarmaciaController', 'comprobantePdf']);
+$router->add('POST', '/farmacia/baja', ['FarmaciaController', 'softDelete']);
+$router->add('GET', '/farmacia/bajas', ['FarmaciaController', 'bajas']);
+$router->add('POST', '/farmacia/restaurar', ['FarmaciaController', 'restore']);
+$router->add('POST', '/farmacia/eliminar', ['FarmaciaController', 'hardDelete']);
 
 // Historia Clínica
 $router->add('GET', '/historia_clinica/create', ['HistoriaClinicaController', 'create']);

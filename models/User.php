@@ -11,7 +11,15 @@ class User {
         $mappedEmail = $email;
         if ($email === 'admin@cajacordes.com') $mappedEmail = 'usr_admin_1';
         if ($email === 'medico@cajacordes.com') $mappedEmail = 'usr_medico_1';
-        if ($email === 'paciente@cajacordes.com') $mappedEmail = 'usr_paciente_1';
+        if ($email === 'paciente@cajacordes.com') {
+            $mappedEmail = 'usr_paciente_1';
+            // Fallback en caso de que usr_paciente_1 no exista
+            $stmtCheck = $this->conn->prepare("SELECT 1 FROM usuarios WHERE email = 'usr_paciente_1'");
+            $stmtCheck->execute();
+            if ($stmtCheck->rowCount() === 0) {
+                $mappedEmail = 'palumedoz@gmail.com';
+            }
+        }
 
         $stmt = $this->conn->prepare("SELECT u.*, r.nombre as rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE u.email = :email LIMIT 1");
         $stmt->bindParam(':email', $mappedEmail);

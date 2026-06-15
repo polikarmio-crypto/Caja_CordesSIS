@@ -17,6 +17,19 @@ class HorarioMedicoController {
 
             $hmModel = new HorarioMedico();
             try {
+                if (empty($medico_id)) {
+                    throw new Exception("El médico es obligatorio.");
+                }
+                if (empty($dia_semana)) {
+                    throw new Exception("El día de la semana es obligatorio.");
+                }
+                if (empty($hora_inicio) || empty($hora_fin)) {
+                    throw new Exception("Las horas de inicio y fin son obligatorias.");
+                }
+                if ($hora_inicio === $hora_fin) {
+                    throw new Exception("La hora de inicio y fin no pueden ser iguales.");
+                }
+
                 if ($hmModel->create($medico_id, $dia_semana, $hora_inicio, $hora_fin)) {
                     log_activity($_SESSION['user_id'] ?? 1, 'Crear Horario', 'horarios_medicos');
                     header('Location: ' . BASE_URL . '/horarios?success=1');

@@ -23,10 +23,25 @@ if (php_sapi_name() === 'cli-server') {
     // Si el archivo físico existe (CSS, JS, img, fuentes, etc.), servirlo directamente
     if (is_file($filePath)) {
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        if (in_array($ext, ['css', 'js', 'woff2', 'png', 'jpg', 'jpeg', 'svg', 'gif', 'ico'])) {
-            header("Cache-Control: public, max-age=31536000, immutable");
+        $mimes = [
+            'css'   => 'text/css',
+            'js'    => 'application/javascript',
+            'woff2' => 'font/woff2',
+            'png'   => 'image/png',
+            'jpg'   => 'image/jpeg',
+            'jpeg'  => 'image/jpeg',
+            'svg'   => 'image/svg+xml',
+            'gif'   => 'image/gif',
+            'ico'   => 'image/x-icon'
+        ];
+        
+        if (isset($mimes[$ext])) {
+            header("Content-Type: " . $mimes[$ext]);
         }
-        return false; // PHP lo sirve de forma nativa
+        
+        header("Cache-Control: public, max-age=31536000, immutable");
+        readfile($filePath);
+        exit;
     }
 }
 
