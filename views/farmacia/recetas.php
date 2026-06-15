@@ -30,7 +30,7 @@
  <div class="card" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); color: white; margin-bottom: 25px; border-radius: 12px; padding: 20px; box-shadow: var(--shadow-md);">
  <div>
  <h3 style="margin: 0; font-size: 1.3em; font-weight: 600; display: flex; align-items: center; gap: 8px;">
- <span></span> Cola de Despacho de Recetas (FIFO)
+ <span></span> Cola de Despacho de Recetas
  </h3>
  <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9em;">El sistema gestiona automáticamente el orden de atención según la hora de creación.</p>
  </div>
