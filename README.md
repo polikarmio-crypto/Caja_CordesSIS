@@ -1,11 +1,11 @@
-# 🏥 Caja de Salud CORDES — Sistema de Información Hospitalaria
+# Caja de Salud CORDES — Sistema de Información Hospitalaria
 
 Sistema web de gestión clínica y administrativa para la Caja de Salud CORDES (La Paz, Bolivia).  
 Desarrollado con arquitectura **MVC en PHP puro** y base de datos **PostgreSQL**.
 
 ---
 
-## 📋 Requisitos previos
+## Requisitos previos
 
 Antes de correr el sistema, asegúrate de tener instalado:
 
@@ -16,11 +16,11 @@ Antes de correr el sistema, asegúrate de tener instalado:
 | **Extensión PDO-PostgreSQL** | — | `php -m \| findstr pdo_pgsql` |
 | **Git** | cualquier | `git --version` |
 
-> ⚠️ El sistema **NO** usa Apache ni MySQL. Solo necesitas PHP y PostgreSQL.
+> El sistema **NO** usa Apache ni MySQL. Solo necesitas PHP y PostgreSQL.
 
 ---
 
-## 🚀 Instalación paso a paso
+## Instalación paso a paso
 
 ### 1. Clonar o copiar el proyecto
 
@@ -68,7 +68,7 @@ $env:PGPASSWORD = "209956"
     -f "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_20260614_1855.sql"
 ```
 
-> 💡 Si `psql` está en el PATH, simplemente ejecuta:
+> Si `psql` está en el PATH, simplemente ejecuta:
 > ```bash
 > psql -U postgres -h 127.0.0.1 -d caja_cordes -f database/caja_cordes_20260614_1855.sql
 > ```
@@ -97,7 +97,7 @@ DB_USER=postgres
 DB_PASS=TU_CONTRASEÑA_AQUI
 ```
 
-> ⚠️ **Nunca subas el `.env` a Git.** Ya está en el `.gitignore`.
+> **Nunca subas el `.env` a Git.** Ya está en el `.gitignore`.
 
 ---
 
@@ -124,7 +124,7 @@ Desde la raíz del proyecto, abre una terminal (PowerShell) y ejecuta:
 & "F:\Pablo Medina\xampp\php\php.exe" -S 127.0.0.1:8000 "f:\Pablo Medina\Caja_CordesSIS\public\router.php"
 ```
 
-> 📌 **Importante**: el comando debe apuntar a `public/router.php`, NO a `public/index.php`.  
+> **Importante**: el comando debe apuntar a `public/router.php`, NO a `public/index.php`.  
 > El `router.php` sirve los archivos estáticos (CSS, JS, imágenes) correctamente.
 
 Si PHP está en el PATH del sistema, puedes simplificar a:
@@ -147,7 +147,7 @@ Deberías ver la pantalla de **inicio de sesión** de Caja Cordes.
 
 ---
 
-## 🔐 Usuarios de prueba
+## Usuarios de prueba
 
 | Rol | Email | Contraseña |
 |---|---|---|
@@ -160,7 +160,7 @@ Deberías ver la pantalla de **inicio de sesión** de Caja Cordes.
 
 ---
 
-## 🗂️ Estructura del proyecto
+## Estructura del proyecto
 
 ```
 Caja_CordesSIS/
@@ -209,7 +209,7 @@ Caja_CordesSIS/
 
 ---
 
-## 🔄 Módulos disponibles
+## Módulos disponibles
 
 | Módulo | Ruta URL | Roles con acceso |
 |---|---|---|
@@ -231,7 +231,7 @@ Caja_CordesSIS/
 
 ---
 
-## 🗄️ Backup de la base de datos
+## Backup de la base de datos
 
 ### Crear un backup nuevo
 
@@ -265,7 +265,7 @@ $env:PGPASSWORD = "209956"
 
 ---
 
-## ⚠️ Solución de problemas comunes
+## Solución de problemas comunes
 
 ### Error: "No se puede conectar a la base de datos"
 - Verifica que PostgreSQL esté corriendo: `Get-Service postgresql*`
@@ -291,7 +291,7 @@ $env:PGPASSWORD = "209956"
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Sistema desarrollado para uso interno de la **Caja de Salud CORDES** — La Paz, Bolivia.  
 Proyecto académico — Ingeniería de Sistemas, 2026.
