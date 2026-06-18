@@ -181,3 +181,6 @@ BEGIN
         END LOOP;
     END LOOP;
 END $$;
+
+-- 7. Modificaciones en la tabla de sucursales (eliminación de límites de geocerca)
+ALTER TABLE sucursales DROP COLUMN IF EXISTS limitesgeocerca;
