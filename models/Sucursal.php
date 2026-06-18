@@ -57,16 +57,15 @@ class Sucursal {
         return $stmt->fetch();
     }
 
-    public function create($nombre, $ubicacion, $horarios, $limitesgeocerca, $id_administrador) {
+    public function create($nombre, $ubicacion, $horarios, $id_administrador) {
         $stmt = $this->conn->prepare("
-            INSERT INTO sucursales (nombre, ubicacion, horarios, limitesgeocerca, id_administrador)
-            VALUES (:n, :u, :h, :l, :a)
+            INSERT INTO sucursales (nombre, ubicacion, horarios, id_administrador)
+            VALUES (:n, :u, :h, :a)
         ");
         return $stmt->execute([
             ':n' => $nombre,
             ':u' => $ubicacion,
             ':h' => $horarios,
-            ':l' => $limitesgeocerca,
             ':a' => $id_administrador
         ]);
     }

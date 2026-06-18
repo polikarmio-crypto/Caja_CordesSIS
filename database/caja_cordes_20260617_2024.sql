@@ -1050,7 +1050,6 @@ CREATE TABLE public.sucursales (
     nombre character varying(100),
     ubicacion character varying(255),
     horarios character varying(100),
-    limitesgeocerca text,
     estado character varying(20) DEFAULT 'activo'::character varying,
     id_administrador integer,
     activo boolean DEFAULT true
@@ -19800,8 +19799,11 @@ COPY public.roles (id, nombre) FROM stdin;
 -- Data for Name: sucursales; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.sucursales (id, nombre, ubicacion, horarios, limitesgeocerca, estado, id_administrador, activo) FROM stdin;
-1	clinica este	sertse	asdasd		activo	5001	t
+COPY public.sucursales (id, nombre, ubicacion, horarios, estado, id_administrador, activo) FROM stdin;
+1	Oficina Central (Av. Arce)	Av. Arce N° 2419, Sopocachi, La Paz	Lunes a Viernes 08:00 - 16:00	activo	5001	t
+2	Clínica CORDES (San Miguel)	Calle Claudio Aliaga N° 1271, Bloque "F", San Miguel, La Paz	24 Horas (Emergencias)	activo	5001	t
+3	Policlínico El Alto	Av. Del Arquitecto N° 140, Zona Ferropetrol, El Alto	24 Horas (Emergencias)	activo	5001	t
+4	Clínica CORDES (Obrajes)	Av. Libertador entre Calle 0 y 1, Obrajes, La Paz	Lunes a Viernes 08:00 - 20:00	activo	5001	t
 \.
 
 
@@ -25000,7 +25002,7 @@ SELECT pg_catalog.setval('public.roles_id_seq', 5, true);
 -- Name: sucursales_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sucursales_id_seq', 1, true);
+SELECT pg_catalog.setval('public.sucursales_id_seq', 4, true);
 
 
 --

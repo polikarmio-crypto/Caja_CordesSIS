@@ -33,11 +33,6 @@
  <input type="text" id="horarios" name="horarios" required placeholder="Ej. Lunes a Viernes 08:00 - 20:00, Sábados 08:00 - 12:00">
  </div>
 
- <div class="form-group">
- <label for="limitesgeocerca">Límites de Geocerca (Coordenadas JSON u otros)</label>
- <textarea id="limitesgeocerca" name="limitesgeocerca" rows="3" style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid transparent; background: var(--secondary-color); font-family: inherit;" placeholder='Ej. {"lat_min": -16.5, "lat_max": -16.4, "lng_min": -68.2, "lng_max": -68.1}'></textarea>
- </div>
-
  <div style="margin-top: 30px; text-align: right;">
  <button type="submit" class="btn" style="width: 100%;">Crear Sucursal</button>
  </div>

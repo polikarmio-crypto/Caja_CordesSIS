@@ -31,7 +31,6 @@
  <th style="padding: 15px 12px;">Nombre</th>
  <th style="padding: 15px 12px;">Ubicación</th>
  <th style="padding: 15px 12px;">Horarios</th>
- <th style="padding: 15px 12px;">Geocerca</th>
  <th style="padding: 15px 12px;">Estado</th>
  <th style="padding: 15px 12px; text-align: center;">Acciones</th>
  </tr>
@@ -43,9 +42,6 @@
  <td style="padding: 15px 12px; font-weight: 600; color: var(--primary-dark);"><?= htmlspecialchars($s['nombre']) ?></td>
  <td style="padding: 15px 12px;"><?= htmlspecialchars($s['ubicacion']) ?></td>
  <td style="padding: 15px 12px; font-size: 0.9rem; color: var(--text-muted);"><?= htmlspecialchars($s['horarios']) ?></td>
- <td style="padding: 15px 12px; font-size: 0.85rem; font-family: monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
- <?= htmlspecialchars($s['limitesgeocerca'] ?: 'No definida') ?>
- </td>
  <td style="padding: 15px 12px;">
  <span style="display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; 
  background: <?= $s['estado'] === 'activo' ? '#dcfce7; color: #166534;' : '#fee2e2; color: #991b1b;' ?>">
@@ -64,7 +60,7 @@
  <?php endforeach; ?>
  <?php if (empty($sucursales)): ?>
  <tr>
- <td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">
+ <td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">
  No hay sucursales registradas en el sistema.
  </td>
  </tr>

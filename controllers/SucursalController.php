@@ -77,7 +77,6 @@ class SucursalController {
             $nombre = trim($_POST['nombre'] ?? '');
             $ubicacion = trim($_POST['ubicacion'] ?? '');
             $horarios = trim($_POST['horarios'] ?? '');
-            $limites = trim($_POST['limitesgeocerca'] ?? '');
             $admin_id = $_SESSION['user_id'] ?? null;
 
             try {
@@ -88,7 +87,7 @@ class SucursalController {
                     throw new Exception("La ubicación de la sucursal debe tener al menos 3 caracteres.");
                 }
 
-                if ($sucursalModel->create($nombre, $ubicacion, $horarios, $limites, $admin_id)) {
+                if ($sucursalModel->create($nombre, $ubicacion, $horarios, $admin_id)) {
                     if (function_exists('log_activity')) {
                         log_activity($_SESSION['user_id'] ?? 1, 'Crear Sucursal', 'sucursales');
                     }

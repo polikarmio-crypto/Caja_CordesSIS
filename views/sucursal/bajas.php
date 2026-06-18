@@ -22,7 +22,6 @@
  <th style="padding: 15px 12px;">Nombre</th>
  <th style="padding: 15px 12px;">Ubicación</th>
  <th style="padding: 15px 12px;">Horarios</th>
- <th style="padding: 15px 12px;">Geocerca</th>
  <th style="padding: 15px 12px; text-align: center;">Acciones</th>
  </tr>
  </thead>
@@ -33,9 +32,6 @@
  <td style="padding: 15px 12px; font-weight: 600; color: var(--primary-dark);"><?= htmlspecialchars($s['nombre']) ?></td>
  <td style="padding: 15px 12px;"><?= htmlspecialchars($s['ubicacion']) ?></td>
  <td style="padding: 15px 12px; font-size: 0.9rem; color: var(--text-muted);"><?= htmlspecialchars($s['horarios']) ?></td>
- <td style="padding: 15px 12px; font-size: 0.85rem; font-family: monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
- <?= htmlspecialchars($s['limitesgeocerca'] ?: 'No definida') ?>
- </td>
  <td style="padding: 15px 12px; text-align: center;">
  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
  <!-- Restaurar -->
@@ -55,7 +51,7 @@
  </tr>
  <?php endforeach; ?>
  <?php if (empty($sucursales)): ?>
- <tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No hay sucursales dadas de baja.</td></tr>
+ <tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">No hay sucursales dadas de baja.</td></tr>
  <?php endif; ?>
  </tbody>
  </table>
