@@ -1,3 +1,6 @@
 [2026-06-18 01:26:20] [INFO] [security] [user:guest] [ip:127.0.0.1] Código 2FA generado para usuario | {"user_id":5001}
 [2026-06-18 01:26:44] [INFO] [security] [user:guest] [ip:127.0.0.1] Código 2FA generado para usuario | {"user_id":5001}
 [2026-06-18 01:26:53] [INFO] [security] [user:5001] [ip:127.0.0.1] Inicio de sesión exitoso con 2FA | {"user_id":5001}
+[2026-06-18 02:27:17] [INFO] [security] [user:5001] [ip:127.0.0.1] Cierre de sesión | {"user_id":5001}
+[2026-06-18 02:27:54] [INFO] [security] [user:guest] [ip:127.0.0.1] Código 2FA generado para usuario | {"user_id":5001}
+[2026-06-18 02:28:04] [INFO] [security] [user:5001] [ip:127.0.0.1] Inicio de sesión exitoso con 2FA | {"user_id":5001}

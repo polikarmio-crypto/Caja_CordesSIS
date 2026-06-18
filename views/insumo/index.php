@@ -33,15 +33,15 @@
  }
  if (!empty($bajoStock)): 
  ?>
- <div style="padding: 15px; background: #fffbeb; border-left: 4px solid #f59e0b; color: #b45309; border-radius: 8px; margin-bottom: 25px; animation: fadeInUp 0.4s;">
- <h4 style="font-weight: bold; margin-bottom: 5px;"> Alerta de Stock Crítico o Bajo</h4>
- <p style="font-size: 0.9rem; margin-bottom: 10px;">Los siguientes insumos médicos tienen 10 unidades o menos en existencia y requieren reabastecimiento:</p>
- <ul style="margin-left: 20px; font-size: 0.9rem;">
- <?php foreach ($bajoStock as $item): ?>
- <li><strong><?= htmlspecialchars($item['nombre']) ?></strong> - Solamente quedan <strong><?= $item['cantidad'] ?></strong> unidades.</li>
- <?php endforeach; ?>
- </ul>
- </div>
+  <div class="alert-warning" style="margin-bottom: 25px; animation: fadeInUp 0.4s;">
+  <h4 style="font-weight: bold; margin-bottom: 5px;">Alerta de Stock Crítico o Bajo</h4>
+  <p style="font-size: 0.9rem; margin-bottom: 10px;">Los siguientes insumos médicos tienen 10 unidades o menos en existencia y requieren reabastecimiento:</p>
+  <ul style="margin-left: 20px; font-size: 0.9rem;">
+  <?php foreach ($bajoStock as $item): ?>
+  <li><strong><?= htmlspecialchars($item['nombre']) ?></strong> - Solamente quedan <strong><?= $item['cantidad'] ?></strong> unidades.</li>
+  <?php endforeach; ?>
+  </ul>
+  </div>
  <?php endif; ?>
 
  <div class="card" style="overflow-x:auto;">

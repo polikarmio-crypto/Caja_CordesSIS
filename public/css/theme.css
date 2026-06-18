@@ -281,6 +281,13 @@ p, span, label, li {
 .alert-danger  { background: rgba(239, 68, 68, 0.1)  !important; border-color: rgba(239, 68, 68, 0.3)  !important; color: var(--danger)  !important; }
 .alert-warning { background: rgba(234, 179, 8, 0.1)  !important; border-color: rgba(234, 179, 8, 0.3)  !important; color: var(--warning) !important; }
 
+/* Corrección para que los textos dentro de las alertas tengan la visibilidad correcta y hereden su color */
+.alert-success, .alert-success *,
+.alert-danger, .alert-danger *,
+.alert-warning, .alert-warning * {
+    color: inherit !important;
+}
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
