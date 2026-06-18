@@ -1,0 +1,4 @@
+[2026-06-18 01:26:20] [INFO] [application] [user:guest] [ip:127.0.0.1] Auditoría: [usuarios] Generó código 2FA: 945519 | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 01:26:44] [INFO] [application] [user:guest] [ip:127.0.0.1] Auditoría: [usuarios] Generó código 2FA: 659170 | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 01:26:53] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [usuarios] Inicio de sesión exitoso con 2FA | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 01:30:28] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [citas] Exportar CSV Citas | {"usuario_id":"5001","modulo":"citas"}

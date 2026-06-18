@@ -28,7 +28,7 @@
 
  <?php if (isset($_SESSION['mock_2fa_code'])): ?>
  <div class="login-alert login-alert--success" style="font-size: 0.9rem;">
- 🔑 <strong>[Simulador]</strong> Código 2FA: <b style="font-size: 1.1rem; letter-spacing: 2px; color: #e2f5ee; margin-left: 5px;"><?= htmlspecialchars($_SESSION['mock_2fa_code']) ?></b>
+ 🔑 <strong>[Simulador]</strong> Código 2FA: <b class="twofa-code-display"><?= htmlspecialchars($_SESSION['mock_2fa_code']) ?></b>
  </div>
  <?php endif; ?>
 

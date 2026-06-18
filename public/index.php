@@ -13,8 +13,10 @@ if (php_sapi_name() === 'cli-server') {
 }
 
 require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../core/Logger.php';
 require_once __DIR__ . '/../core/Helpers.php';
 require_once __DIR__ . '/../core/Router.php';
+require_once __DIR__ . '/../core/BackupManager.php';
 
 // Estructuras de Datos Personalizadas
 require_once __DIR__ . '/../core/structures/CustomNode.php';
@@ -32,6 +34,14 @@ require_once __DIR__ . '/../models/Laboratorio.php';
 require_once __DIR__ . '/../models/Medicamento.php';
 require_once __DIR__ . '/../models/AusenciaMedico.php';
 
+// Repositories
+require_once __DIR__ . '/../repositories/AuthRepository.php';
+require_once __DIR__ . '/../repositories/CitaRepository.php';
+require_once __DIR__ . '/../repositories/AusenciaMedicoRepository.php';
+require_once __DIR__ . '/../repositories/DashboardRepository.php';
+require_once __DIR__ . '/../repositories/PacienteRepository.php';
+require_once __DIR__ . '/../repositories/MedicoRepository.php';
+
 // Controllers
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
@@ -45,6 +55,7 @@ require_once __DIR__ . '/../controllers/LaboratorioController.php';
 require_once __DIR__ . '/../controllers/FarmaciaController.php';
 require_once __DIR__ . '/../controllers/FacturacionController.php';
 require_once __DIR__ . '/../controllers/MedicoController.php';
+require_once __DIR__ . '/../controllers/BackupController.php';
 
 $router = new Router();
 
@@ -67,6 +78,11 @@ $router->add('GET', '/dashboard', ['DashboardController', 'index']);
 $router->add('GET', '/api/dashboard/stats', ['DashboardController', 'stats']);
 $router->add('GET', '/dashboard/export_pdf', ['DashboardController', 'exportPdf']);
 $router->add('GET', '/dashboard/export_csv', ['DashboardController', 'exportCsv']);
+
+// Backups BD
+$router->add('GET',  '/backups',         ['BackupController', 'index']);
+$router->add('POST', '/backups/manual',   ['BackupController', 'manual']);
+$router->add('GET',  '/backups/download', ['BackupController', 'download']);
 
 // Pacientes
 $router->add('GET', '/pacientes', ['PacienteController', 'index']);

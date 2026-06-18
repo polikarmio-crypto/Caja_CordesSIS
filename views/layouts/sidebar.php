@@ -49,11 +49,13 @@
  </details>
 
  <!-- Grupo 3: Administración y Reportes -->
+ <?php $adminOpen = (strpos($uri, 'sucursal') !== false || strpos($uri, 'backups') !== false) ? 'open' : ''; ?>
  <details class="sidebar-group" <?= $adminOpen ?>>
  <summary class="group-title">Administración</summary>
  <div class="group-items">
  <a href="<?= BASE_URL ?>/sucursal" class="nav-link <?= strpos($uri, 'sucursal') !== false ? 'active' : '' ?>">Sucursales</a>
  <a href="<?= BASE_URL ?>/reportes/citas" class="nav-link" target="_blank">Reporte CSV Citas</a>
+ <a href="<?= BASE_URL ?>/backups" class="nav-link <?= strpos($uri, 'backups') !== false ? 'active' : '' ?>" title="Copias de seguridad de la BD">Backups BD</a>
  </div>
  </details>
  <?php endif; ?>

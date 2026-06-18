@@ -24,7 +24,7 @@
  <div class="card" style="background: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--shadow-sm);">
  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
  <h3 style="margin: 0; color: var(--primary-color); font-size: 1.15em; font-weight: 600; display: flex; align-items: center; gap: 8px;">
- <span>🔄</span> Navegador Bidireccional de Consultas (Doubly Linked List)
+ <span>🔄</span> Navegador de Consultas 
  </h3>
  <div style="font-size: 0.85em; background: rgba(0,0,0,0.05); padding: 4px 10px; border-radius: 20px; font-weight: 600; color: var(--text-muted);">
  Nodos en Lista: <?= $historialList->getSize() ?>

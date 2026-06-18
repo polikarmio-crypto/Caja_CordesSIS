@@ -83,20 +83,20 @@
 </div>
 
 <!-- Modal Update -->
-<div id="modalUpdate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
- <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s;">
- <h2 style="margin-bottom:15px; color:var(--primary-color);">Actualizar Medicamento</h2>
- <p style="margin-bottom:15px;">Producto: <strong id="lbl_nombre"></strong></p>
+<div id="modalUpdate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+ <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:16px; width:400px; animation: fadeInUp 0.3s; box-shadow:var(--shadow-lg);">
+ <h2 style="margin-bottom:15px; color:var(--primary-light);">Actualizar Medicamento</h2>
+ <p style="margin-bottom:15px; color:var(--text-secondary);">Producto: <strong id="lbl_nombre" style="color:var(--text-main);"></strong></p>
  <form action="<?= BASE_URL ?>/farmacia/update" method="POST">
  <input type="hidden" name="id" id="med_id">
  
  <div class="form-group">
- <label>Stock Actual</label>
- <input type="number" name="stock" id="med_stock" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+ <label style="display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem;">Stock Actual</label>
+ <input type="number" name="stock" id="med_stock" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background:var(--bg-input); color:var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 20px;">
- <label>Precio Unitario (Bs.)</label>
- <input type="number" step="0.01" name="precio_unitario" id="med_precio" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+ <label style="display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem;">Precio Unitario (Bs.)</label>
+ <input type="number" step="0.01" name="precio_unitario" id="med_precio" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background:var(--bg-input); color:var(--text-main);">
  </div>
 
  <div style="display:flex; justify-content:flex-end; gap:10px;">
@@ -108,33 +108,33 @@
 </div>
 
 <!-- Modal Create -->
-<div id="modalCreate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
- <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s; color: #1e293b;">
- <h2 style="margin-bottom:15px; color:var(--primary-color);">Añadir Medicamento</h2>
+<div id="modalCreate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+ <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:16px; width:400px; animation: fadeInUp 0.3s; box-shadow:var(--shadow-lg); max-height:90vh; overflow-y:auto;">
+ <h2 style="margin-bottom:15px; color:var(--primary-light);">Añadir Medicamento</h2>
  <form action="<?= BASE_URL ?>/farmacia/create" method="POST">
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Código de Identificación</label>
- <input type="text" name="codigo_identificacion" placeholder="Ej. MED-020" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Código de Identificación</label>
+ <input type="text" name="codigo_identificacion" placeholder="Ej. MED-020" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Nombre del Medicamento</label>
- <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Nombre del Medicamento</label>
+ <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Tipo (Tabletas, Jarabe, etc.)</label>
- <input type="text" name="tipo" placeholder="Ej. Tabletas, Jarabe" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Tipo (Tabletas, Jarabe, etc.)</label>
+ <input type="text" name="tipo" placeholder="Ej. Tabletas, Jarabe" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Stock Inicial</label>
- <input type="number" name="stock" value="0" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Stock Inicial</label>
+ <input type="number" name="stock" value="0" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 15px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Precio Unitario (Bs.)</label>
- <input type="number" step="0.01" name="precio_unitario" value="0.00" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Precio Unitario (Bs.)</label>
+ <input type="number" step="0.01" name="precio_unitario" value="0.00" min="0" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
  <div class="form-group" style="margin-bottom: 20px;">
- <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Fecha de Vencimiento</label>
- <input type="date" name="vencimiento" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #f8fafc; color: #1e293b;">
+ <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary); font-size:0.88rem;">Fecha de Vencimiento</label>
+ <input type="date" name="vencimiento" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
  </div>
 
  <div style="display:flex; justify-content:flex-end; gap:10px;">

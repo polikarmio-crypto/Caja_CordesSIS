@@ -1,5 +1,10 @@
 <?php
+/**
+ * AuthController — Gestiona autenticación, perfil y recuperación de contraseña.
+ * Las consultas SQL están delegadas a AuthRepository.
+ */
 class AuthController {
+
     public function showLogin() {
         if (isset($_SESSION['user_id'])) {
             header('Location: ' . BASE_URL . '/dashboard');
@@ -10,45 +15,43 @@ class AuthController {
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
+            $email    = $_POST['email']    ?? '';
             $password = $_POST['password'] ?? '';
 
             $userModel = new User();
-            $user = $userModel->login($email, $password);
+            $user      = $userModel->login($email, $password);
 
             if ($user === 'blocked') {
+                AppLogger::security(AppLogger::WARNING, "Cuenta bloqueada por intentos fallidos", ['email' => $email]);
                 $error = "Esta cuenta ha sido bloqueada temporalmente por seguridad tras 3 intentos fallidos. Inténtelo más tarde (10 min).";
                 require_once '../views/auth/login.php';
                 return;
             }
 
             if ($user) {
-                // Sprint 7: Generate 2FA code and redirect to 2FA verification
                 $code = $userModel->generate2FACode($user['id']);
-                
-                // Save in session temp user id
-                $_SESSION['temp_user_id'] = $user['id'];
-                
-                // MOCK EMAIL: save to session for visual mock display
+
+                $_SESSION['temp_user_id']  = $user['id'];
                 $_SESSION['mock_2fa_code'] = $code;
-                
-                if (function_exists('log_activity')) {
-                    log_activity($user['id'], "Generó código 2FA: $code", 'usuarios');
-                }
-                
+
+                AppLogger::security(AppLogger::INFO, "Código 2FA generado para usuario", ['user_id' => $user['id']]);
+                log_activity($user['id'], "Generó código 2FA: $code", 'usuarios');
+
                 header('Location: ' . BASE_URL . '/login/2fa');
                 exit;
             } else {
-                // Check if user exists to tell if attempts were incremented
                 $existingUser = $userModel->findByEmail($email);
                 if ($existingUser) {
                     $attemptsLeft = 3 - ($existingUser['intentos_fallidos']);
                     if ($attemptsLeft <= 0) {
+                        AppLogger::security(AppLogger::WARNING, "Cuenta bloqueada tras 3 intentos", ['email' => $email]);
                         $error = "Credenciales incorrectas. Cuenta bloqueada temporalmente por 3 intentos fallidos.";
                     } else {
+                        AppLogger::security(AppLogger::NOTICE, "Intento de login fallido", ['email' => $email, 'intentos_restantes' => $attemptsLeft]);
                         $error = "Credenciales incorrectas. Le quedan $attemptsLeft intentos antes de bloquear su cuenta.";
                     }
                 } else {
+                    AppLogger::security(AppLogger::NOTICE, "Login con email inexistente", ['email' => $email]);
                     $error = "Credenciales incorrectas.";
                 }
                 require_once '../views/auth/login.php';
@@ -66,7 +69,7 @@ class AuthController {
 
     public function verify2FA() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $code = $_POST['code'] ?? '';
+            $code   = $_POST['code']  ?? '';
             $userId = $_SESSION['temp_user_id'] ?? null;
 
             if (!$userId) {
@@ -77,29 +80,28 @@ class AuthController {
             $userModel = new User();
             if ($userModel->verify2FACode($userId, $code)) {
                 $user = $userModel->findById($userId);
-                
-                $_SESSION['user_id'] = $user['id'];
+
+                $_SESSION['user_id']    = $user['id'];
                 $_SESSION['rol_nombre'] = $user['rol_nombre'];
-                $_SESSION['email'] = $user['email'];
-                
+                $_SESSION['email']      = $user['email'];
+
                 if ($user['rol_nombre'] === 'Paciente') {
-                    $pacModel = new Paciente();
-                    $paciente = $pacModel->findByUsuarioId($user['id']);
+                    $pacModel  = new Paciente();
+                    $paciente  = $pacModel->findByUsuarioId($user['id']);
                     if ($paciente) {
                         $_SESSION['paciente_id'] = $paciente['id'];
                     }
                 }
-                
-                unset($_SESSION['temp_user_id']);
-                unset($_SESSION['mock_2fa_code']);
 
-                if (function_exists('log_activity')) {
-                    log_activity($user['id'], 'Inicio de sesión exitoso con 2FA', 'usuarios');
-                }
+                unset($_SESSION['temp_user_id'], $_SESSION['mock_2fa_code']);
+
+                AppLogger::security(AppLogger::INFO, "Inicio de sesión exitoso con 2FA", ['user_id' => $user['id']]);
+                log_activity($user['id'], 'Inicio de sesión exitoso con 2FA', 'usuarios');
 
                 header('Location: ' . BASE_URL . '/dashboard');
                 exit;
             } else {
+                AppLogger::security(AppLogger::WARNING, "Código 2FA incorrecto o expirado", ['user_id' => $userId]);
                 $error = "Código de verificación incorrecto o expirado.";
                 require_once '../views/auth/two_factor.php';
             }
@@ -112,15 +114,17 @@ class AuthController {
 
     public function sendResetLink() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
+            $email     = $_POST['email'] ?? '';
             $userModel = new User();
-            $token = $userModel->generateResetToken($email);
+            $token     = $userModel->generateResetToken($email);
 
             if ($token) {
                 $resetLink = BASE_URL . "/password/change?token=" . $token;
-                $_SESSION['mock_reset_link'] = $resetLink; // for easy visual testing!
+                $_SESSION['mock_reset_link'] = $resetLink;
+                AppLogger::security(AppLogger::INFO, "Token de restablecimiento generado", ['email' => $email]);
                 $success = "Se ha generado un enlace de recuperación. En producción se enviaría por correo electrónico.";
             } else {
+                AppLogger::security(AppLogger::WARNING, "Reset solicitado para email no existente", ['email' => $email]);
                 $error = "No existe ninguna cuenta registrada con ese correo electrónico.";
             }
             require_once '../views/auth/reset.php';
@@ -132,9 +136,9 @@ class AuthController {
             $token = '';
             require_once '../views/auth/change_password.php';
         } else {
-            $token = $_GET['token'] ?? '';
+            $token     = $_GET['token'] ?? '';
             $userModel = new User();
-            $user = $userModel->verifyResetToken($token);
+            $user      = $userModel->verifyResetToken($token);
 
             if ($user) {
                 require_once '../views/auth/change_password.php';
@@ -147,18 +151,16 @@ class AuthController {
 
     public function changePassword() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $token = $_POST['token'] ?? '';
-            $password = $_POST['password'] ?? '';
-            
+            $token     = $_POST['token']    ?? '';
+            $password  = $_POST['password'] ?? '';
             $userModel = new User();
-            
+
             if (isset($_SESSION['user_id'])) {
                 $userId = $_SESSION['user_id'];
-                $hash = password_hash($password, PASSWORD_BCRYPT);
+                $hash   = password_hash($password, PASSWORD_BCRYPT);
                 if ($userModel->updatePassword($userId, $hash)) {
-                    if (function_exists('log_activity')) {
-                        log_activity($userId, 'Cambió su contraseña desde su perfil', 'usuarios');
-                    }
+                    AppLogger::security(AppLogger::INFO, "Contraseña actualizada desde perfil", ['user_id' => $userId]);
+                    log_activity($userId, 'Cambió su contraseña desde su perfil', 'usuarios');
                     header('Location: ' . BASE_URL . '/dashboard?success=Contraseña+actualizada+correctamente');
                     exit;
                 }
@@ -169,9 +171,8 @@ class AuthController {
                 if ($user) {
                     $hash = password_hash($password, PASSWORD_BCRYPT);
                     if ($userModel->updatePassword($user['id'], $hash)) {
-                        if (function_exists('log_activity')) {
-                            log_activity($user['id'], 'Restableció su contraseña exitosamente', 'usuarios');
-                        }
+                        AppLogger::security(AppLogger::INFO, "Contraseña restablecida con token", ['user_id' => $user['id']]);
+                        log_activity($user['id'], 'Restableció su contraseña exitosamente', 'usuarios');
                         header('Location: ' . BASE_URL . '/?success=Contraseña+actualizada+correctamente');
                         exit;
                     }
@@ -183,6 +184,8 @@ class AuthController {
     }
 
     public function logout() {
+        $userId = $_SESSION['user_id'] ?? null;
+        AppLogger::security(AppLogger::INFO, "Cierre de sesión", ['user_id' => $userId]);
         session_destroy();
         header('Location: ' . BASE_URL . '/');
         exit;
@@ -195,51 +198,29 @@ class AuthController {
         }
 
         $userId = $_SESSION['user_id'];
-        $conn = Database::getInstance();
+        $repo   = new AuthRepository();
 
-        $stmtUser = $conn->prepare("SELECT u.*, r.nombre as rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE u.id = :id");
-        $stmtUser->execute([':id' => $userId]);
-        $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
-
+        $user = $repo->findUserWithRoleById($userId);
         if (!$user) {
             session_destroy();
             header('Location: ' . BASE_URL . '/');
             exit;
         }
 
-        $medico = null;
+        $medico   = null;
         $paciente = null;
         $horarios = [];
 
         if ($user['rol_nombre'] === 'Médico') {
-            $stmtMed = $conn->prepare("SELECT * FROM medicos WHERE usuario_id = :uid");
-            $stmtMed->execute([':uid' => $userId]);
-            $medico = $stmtMed->fetch(PDO::FETCH_ASSOC);
-
+            $medico = $repo->findMedicoByUserId($userId);
             if ($medico) {
-                $stmtEsp = $conn->prepare("
-                    SELECT e.nombre, e.parent_id, p.nombre as parent_nombre
-                    FROM medico_especialidades me
-                    JOIN especialidades e ON me.especialidad_id = e.id
-                    LEFT JOIN especialidades p ON e.parent_id = p.id
-                    WHERE me.medico_id = :mid
-                ");
-                $stmtEsp->execute([':mid' => $medico['id']]);
-                $medico['especialidades'] = $stmtEsp->fetchAll(PDO::FETCH_ASSOC);
-
-                $stmtHor = $conn->prepare("SELECT * FROM horarios_medicos WHERE medico_id = :mid AND activo = TRUE ORDER BY id");
-                $stmtHor->execute([':mid' => $medico['id']]);
-                $horarios = $stmtHor->fetchAll(PDO::FETCH_ASSOC);
+                $medico['especialidades'] = $repo->findEspecialidadesByMedicoId($medico['id']);
+                $horarios                 = $repo->findHorariosByMedicoId($medico['id']);
             }
         } elseif ($user['rol_nombre'] === 'Paciente') {
-            $stmtPac = $conn->prepare("SELECT * FROM pacientes WHERE usuario_id = :uid");
-            $stmtPac->execute([':uid' => $userId]);
-            $paciente = $stmtPac->fetch(PDO::FETCH_ASSOC);
-
+            $paciente = $repo->findPacienteByUserId($userId);
             if ($paciente) {
-                $stmtTel = $conn->prepare("SELECT telefono FROM paciente_telefonos WHERE paciente_id = :pid");
-                $stmtTel->execute([':pid' => $paciente['id']]);
-                $paciente['telefonos'] = $stmtTel->fetchAll(PDO::FETCH_COLUMN);
+                $paciente['telefonos'] = $repo->findTelefonosByPacienteId($paciente['id']);
             }
         }
 
@@ -252,13 +233,14 @@ class AuthController {
             exit;
         }
 
-        $userId = $_SESSION['user_id'];
-        $nombres = trim($_POST['nombres'] ?? '');
+        $userId    = $_SESSION['user_id'];
+        $nombres   = trim($_POST['nombres']   ?? '');
         $apellidos = trim($_POST['apellidos'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $email     = trim($_POST['email']     ?? '');
         $newPassword = $_POST['new_password'] ?? '';
 
         $conn = Database::getInstance();
+        $repo = new AuthRepository();
 
         try {
             if (empty($nombres) || empty($apellidos) || empty($email)) {
@@ -273,19 +255,18 @@ class AuthController {
 
             $conn->beginTransaction();
 
+            // Manejo de avatar
             $foto_perfil = $_POST['existing_avatar'] ?? 'default_avatar.png';
             if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-                $fileTmpPath = $_FILES['avatar']['tmp_name'];
-                $fileName = $_FILES['avatar']['name'];
+                $fileTmpPath   = $_FILES['avatar']['tmp_name'];
+                $fileName      = $_FILES['avatar']['name'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
                 if (in_array($fileExtension, $allowedExtensions)) {
-                    $newFileName = 'avatar_' . $userId . '_' . time() . '.' . $fileExtension;
+                    $newFileName   = 'avatar_' . $userId . '_' . time() . '.' . $fileExtension;
                     $uploadFileDir = __DIR__ . '/../public/uploads/avatars/';
-                    if (!is_dir($uploadFileDir)) {
-                        mkdir($uploadFileDir, 0755, true);
-                    }
+                    if (!is_dir($uploadFileDir)) mkdir($uploadFileDir, 0755, true);
                     $dest_path = $uploadFileDir . $newFileName;
                     if (move_uploaded_file($fileTmpPath, $dest_path)) {
                         $foto_perfil = $newFileName;
@@ -295,67 +276,38 @@ class AuthController {
                 }
             }
 
+            // Actualizar usuario
             if (!empty($newPassword)) {
                 if (strlen($newPassword) < 4) {
                     throw new Exception("La nueva contraseña debe tener al menos 4 caracteres.");
                 }
                 $hash = password_hash($newPassword, PASSWORD_BCRYPT);
-                $stmt = $conn->prepare("UPDATE usuarios SET nombres = :nom, apellidos = :ape, email = :email, password_hash = :hash, foto_perfil = :avatar WHERE id = :id");
-                $stmt->execute([
-                    ':nom' => $nombres,
-                    ':ape' => $apellidos,
-                    ':email' => $email,
-                    ':hash' => $hash,
-                    ':avatar' => $foto_perfil,
-                    ':id' => $userId
-                ]);
+                $repo->updateUserWithPassword($userId, $nombres, $apellidos, $email, $hash, $foto_perfil);
             } else {
-                $stmt = $conn->prepare("UPDATE usuarios SET nombres = :nom, apellidos = :ape, email = :email, foto_perfil = :avatar WHERE id = :id");
-                $stmt->execute([
-                    ':nom' => $nombres,
-                    ':ape' => $apellidos,
-                    ':email' => $email,
-                    ':avatar' => $foto_perfil,
-                    ':id' => $userId
-                ]);
+                $repo->updateUserWithoutPassword($userId, $nombres, $apellidos, $email, $foto_perfil);
             }
 
-            $stmtCheck = $conn->prepare("SELECT p.id, u.rol_id, r.nombre as rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id LEFT JOIN pacientes p ON p.usuario_id = u.id WHERE u.id = :id");
-            $stmtCheck->execute([':id' => $userId]);
-            $userInfo = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-
+            // Si es Paciente, actualizar tabla pacientes
+            $userInfo = $repo->findUserPacienteInfo($userId);
             if ($userInfo && $userInfo['rol_nombre'] === 'Paciente' && $userInfo['id']) {
                 $fecha_nac = $_POST['fecha_nac'] ?? '';
-                $telefono = trim($_POST['telefono'] ?? '');
-
-                $stmtPac = $conn->prepare("UPDATE pacientes SET nombres = :nom, apellidos = :ape, fecha_nac = :fn WHERE id = :id");
-                $stmtPac->execute([
-                    ':nom' => $nombres,
-                    ':ape' => $apellidos,
-                    ':fn' => $fecha_nac ?: null,
-                    ':id' => $userInfo['id']
-                ]);
-
+                $telefono  = trim($_POST['telefono'] ?? '');
+                $repo->updatePaciente((int)$userInfo['id'], $nombres, $apellidos, $fecha_nac ?: null);
                 if (!empty($telefono)) {
-                    $conn->prepare("DELETE FROM paciente_telefonos WHERE paciente_id = :pid")->execute([':pid' => $userInfo['id']]);
-                    $stmtTel = $conn->prepare("INSERT INTO paciente_telefonos (paciente_id, telefono) VALUES (:pid, :tel)");
-                    $stmtTel->execute([':pid' => $userInfo['id'], ':tel' => $telefono]);
+                    $repo->replaceTelefonoPaciente((int)$userInfo['id'], $telefono);
                 }
             }
 
             $_SESSION['email'] = $email;
-
-            if (function_exists('log_activity')) {
-                log_activity($userId, 'Actualizó su perfil de usuario', 'usuarios');
-            }
+            AppLogger::info("Perfil actualizado", ['user_id' => $userId]);
+            log_activity($userId, 'Actualizó su perfil de usuario', 'usuarios');
 
             $conn->commit();
             header('Location: ' . BASE_URL . '/perfil?success=Perfil+actualizado+con+exito');
             exit();
         } catch (Exception $e) {
-            if ($conn->inTransaction()) {
-                $conn->rollBack();
-            }
+            if ($conn->inTransaction()) $conn->rollBack();
+            AppLogger::error("Error al actualizar perfil: " . $e->getMessage(), ['user_id' => $userId]);
             header('Location: ' . BASE_URL . '/perfil?error=' . urlencode($e->getMessage()));
             exit();
         }
@@ -368,13 +320,10 @@ class AuthController {
             exit;
         }
 
-        $userId = $_SESSION['user_id'];
+        $userId   = $_SESSION['user_id'];
         $password = $_POST['password'] ?? '';
-
-        $conn = Database::getInstance();
-        $stmt = $conn->prepare("SELECT password_hash FROM usuarios WHERE id = :id");
-        $stmt->execute([':id' => $userId]);
-        $hash = $stmt->fetchColumn();
+        $repo     = new AuthRepository();
+        $hash     = $repo->findPasswordHashByUserId($userId);
 
         if ($hash && password_verify($password, $hash)) {
             echo json_encode(['success' => true, 'password' => $password]);

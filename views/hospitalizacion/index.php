@@ -69,23 +69,23 @@
 </div>
 
 <!-- Modal Ingreso -->
-<div id="modalIngreso" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
- <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s;">
- <h2 style="margin-bottom:15px; color:var(--primary-color);">Ingresar Paciente</h2>
- <p style="margin-bottom:15px;">Cama <strong id="lbl_cama_libre"></strong></p>
+<div id="modalIngreso" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+ <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:16px; width:400px; animation: fadeInUp 0.3s; box-shadow:var(--shadow-lg);">
+ <h2 style="margin-bottom:15px; color:var(--primary-light);">Ingresar Paciente</h2>
+ <p style="margin-bottom:15px; color:var(--text-secondary);">Cama <strong id="lbl_cama_libre" style="color:var(--primary-light);"></strong></p>
  <form action="<?= BASE_URL ?>/hospitalizacion/ingresar" method="POST">
  <input type="hidden" name="cama_id" id="ingreso_cama_id">
  <div class="form-group">
- <label>Paciente</label>
- <select name="paciente_id" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+ <label style="display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem;">Paciente</label>
+ <select name="paciente_id" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background:var(--bg-input); color:var(--text-main);">
  <?php foreach($pacientes as $p): ?>
  <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombres'] . ' ' . $p['apellidos'] . ' - ' . $p['ci']) ?></option>
  <?php endforeach; ?>
  </select>
  </div>
  <div class="form-group" style="margin-bottom: 20px;">
- <label>Motivo de Ingreso</label>
- <textarea name="motivo_ingreso" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;" required></textarea>
+ <label style="display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem;">Motivo de Ingreso</label>
+ <textarea name="motivo_ingreso" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-main);" required></textarea>
  </div>
  <div style="display:flex; justify-content:flex-end; gap:10px;">
  <button type="button" class="btn btn-outline" onclick="closeModals()">Cancelar</button>
@@ -96,34 +96,34 @@
 </div>
 
 <!-- Modal Alta -->
-<div id="modalAlta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
- <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s;">
- <h2 style="margin-bottom:15px; color:var(--danger-color, #e3342f);">Dar de Alta</h2>
- <p style="margin-bottom:15px;">Cama <strong id="lbl_cama_ocupada"></strong> - <span id="lbl_paciente_ocupada"></span></p>
+<div id="modalAlta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+ <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:16px; width:400px; animation: fadeInUp 0.3s; box-shadow:var(--shadow-lg);">
+ <h2 style="margin-bottom:15px; color:var(--danger);">Dar de Alta</h2>
+ <p style="margin-bottom:15px; color:var(--text-secondary);">Cama <strong id="lbl_cama_ocupada" style="color:var(--text-main);"></strong> - <span id="lbl_paciente_ocupada" style="color:var(--text-main);"></span></p>
  <form action="<?= BASE_URL ?>/hospitalizacion/alta" method="POST">
  <input type="hidden" name="cama_id" id="alta_cama_id">
  <div class="form-group" style="margin-bottom: 20px;">
- <label>Notas de Alta (Opcional)</label>
- <textarea name="notas_alta" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;"></textarea>
+ <label style="display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem;">Notas de Alta (Opcional)</label>
+ <textarea name="notas_alta" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-main);"></textarea>
  </div>
  <div style="display:flex; justify-content:flex-end; gap:10px;">
- <button type="button" class="btn btn-outline" onclick="closeModals()">Cancelar</button>
- <button type="submit" class="btn" style="background:#e3342f; color:white;">Confirmar Alta</button>
+ <button type="button" class="btn btn-outline" onclick="closeModals()">No, volver</button>
+ <button type="submit" class="btn" style="background:var(--danger); color:#fff;">Confirmar Alta</button>
  </div>
  </form>
  </div>
 </div>
 
 <!-- Modal Limpieza -->
-<div id="modalLimpieza" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
- <div style="background:white; padding:30px; border-radius:12px; width:400px; animation: fadeInUp 0.3s;">
- <h2 style="margin-bottom:15px; color:#ca8a04;">Cama en Limpieza</h2>
- <p style="margin-bottom:15px;">¿La cama <strong id="lbl_cama_limpieza"></strong> ya fue desinfectada y está lista para un nuevo ingreso?</p>
+<div id="modalLimpieza" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+ <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:30px; border-radius:16px; width:400px; animation: fadeInUp 0.3s; box-shadow:var(--shadow-lg);">
+ <h2 style="margin-bottom:15px; color:var(--warning);">Cama en Limpieza</h2>
+ <p style="margin-bottom:15px; color:var(--text-secondary);">¿La cama <strong id="lbl_cama_limpieza" style="color:var(--text-main);"></strong> ya fue desinfectada y está lista para un nuevo ingreso?</p>
  <form action="<?= BASE_URL ?>/hospitalizacion/limpiar" method="POST">
  <input type="hidden" name="cama_id" id="limpiar_cama_id">
  <div style="display:flex; justify-content:flex-end; gap:10px;">
  <button type="button" class="btn btn-outline" onclick="closeModals()">No, volver</button>
- <button type="submit" class="btn" style="background:#ca8a04; color:white;">Sí, Marcar como Libre</button>
+ <button type="submit" class="btn" style="background:var(--warning); color:#fff;">Si, Marcar como Libre</button>
  </div>
  </form>
  </div>

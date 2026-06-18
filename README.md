@@ -32,6 +32,8 @@ cd Caja_CordesSIS
 # O simplemente copia la carpeta del proyecto a donde quieras
 ```
 
+---
+
 ### 2. Configurar la base de datos
 
 #### 2.1 Crear la base de datos en PostgreSQL
@@ -52,37 +54,66 @@ Si el locale `es_BO.UTF-8` no está disponible en tu sistema, usa:
 CREATE DATABASE caja_cordes WITH ENCODING='UTF8';
 ```
 
-#### 2.2 Restaurar el esquema y datos
+---
 
-Desde una terminal (PowerShell o CMD), en la carpeta del proyecto:
+#### 2.2 Cargar el esquema y los datos (archivo principal)
+
+La carpeta `database/` contiene los siguientes archivos SQL:
+
+| Archivo | Descripción |
+|---|---|
+| `caja_cordes_20260617_2024.sql` | Dump completo: esquema + todos los datos de prueba |
+| `security.sql` | Politicas de seguridad Row Level Security (RLS) |
+| `update_schema.sql` | Actualizaciones de esquema (ejecutar despues del dump si existe) |
+
+**Paso 1 — Cargar el dump principal (esquema + datos):**
+
+Desde PowerShell, ajusta la ruta de `psql.exe` según donde tengas PostgreSQL instalado:
 
 ```powershell
-# En este equipo PostgreSQL está instalado en E:\PostgreSQL\
-# Ajusta la ruta si tu instalación es diferente:
-
-$env:PGPASSWORD = "209956"
+# PostgreSQL instalado en E:\PostgreSQL\ (ajusta si es diferente)
+$env:PGPASSWORD = "TU_CONTRASENA_AQUI"
 & "E:\PostgreSQL\bin\psql.exe" `
     -U postgres `
     -h 127.0.0.1 `
     -d caja_cordes `
-    -f "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_20260614_1855.sql"
+    -f "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_20260617_2024.sql"
 ```
 
-> Si `psql` está en el PATH, simplemente ejecuta:
-> ```bash
-> psql -U postgres -h 127.0.0.1 -d caja_cordes -f database/caja_cordes_20260614_1855.sql
-> ```
+Si `psql` esta en el PATH del sistema, simplifica a:
+```bash
+psql -U postgres -h 127.0.0.1 -d caja_cordes -f database/caja_cordes_20260617_2024.sql
+```
 
-#### 2.3 Aplicar la seguridad (RLS y políticas)
+> Si ves errores de tipo `already exists`, son normales cuando el esquema ya fue cargado. Los datos se siguen insertando correctamente.
+
+---
+
+**Paso 2 — Aplicar actualizaciones de esquema (si corresponde):**
 
 ```powershell
-$env:PGPASSWORD = "209956"
+$env:PGPASSWORD = "TU_CONTRASENA_AQUI"
+& "E:\PostgreSQL\bin\psql.exe" `
+    -U postgres `
+    -h 127.0.0.1 `
+    -d caja_cordes `
+    -f "f:\Pablo Medina\Caja_CordesSIS\database\update_schema.sql"
+```
+
+---
+
+**Paso 3 — Aplicar politicas de seguridad RLS:**
+
+```powershell
+$env:PGPASSWORD = "TU_CONTRASENA_AQUI"
 & "E:\PostgreSQL\bin\psql.exe" `
     -U postgres `
     -h 127.0.0.1 `
     -d caja_cordes `
     -f "f:\Pablo Medina\Caja_CordesSIS\database\security.sql"
 ```
+
+> **Orden correcto:** dump principal → update_schema → security. Siempre en ese orden.
 
 ---
 
@@ -94,7 +125,7 @@ En la raíz del proyecto existe el archivo **`.env`**. Edítalo con tus datos:
 DB_HOST=127.0.0.1
 DB_NAME=caja_cordes
 DB_USER=postgres
-DB_PASS=TU_CONTRASEÑA_AQUI
+DB_PASS=TU_CONTRASENA_AQUI
 ```
 
 > **Nunca subas el `.env` a Git.** Ya está en el `.gitignore`.
@@ -113,6 +144,12 @@ En XAMPP el archivo `php.ini` suele estar en:
 ```
 F:\Pablo Medina\xampp\php\php.ini
 ```
+
+Para verificar que la extensión está activa, ejecuta en PowerShell:
+```powershell
+& "F:\Pablo Medina\xampp\php\php.exe" -m | findstr pdo_pgsql
+```
+Debe mostrar `pdo_pgsql` en la lista. Si no aparece, habilita la línea en `php.ini` y reinicia el servidor.
 
 ---
 
@@ -164,47 +201,49 @@ Deberías ver la pantalla de **inicio de sesión** de Caja Cordes.
 
 ```
 Caja_CordesSIS/
-├── .env                    ← Variables de entorno (DB, etc.)
+├── .env                    <- Variables de entorno (DB, etc.)
 ├── config/
-│   └── Database.php        ← Conexión PDO a PostgreSQL
-├── controllers/            ← Lógica de cada módulo
+│   └── Database.php        <- Conexión PDO a PostgreSQL
+├── controllers/            <- Lógica de cada módulo
 │   ├── AuthController.php
 │   ├── CitaController.php
 │   ├── DashboardController.php
 │   └── ...
 ├── core/
-│   ├── Router.php          ← Enrutador MVC
-│   ├── Helpers.php         ← Funciones auxiliares (log_activity, etc.)
-│   └── structures/         ← Estructuras de datos personalizadas
+│   ├── Router.php          <- Enrutador MVC
+│   ├── Helpers.php         <- Funciones auxiliares (log_activity, etc.)
+│   └── structures/         <- Estructuras de datos personalizadas
 ├── database/
-│   ├── caja_cordes_pg.sql  ← Dump completo de la BD (esquema + datos)
-│   └── security.sql        ← Políticas de seguridad RLS
-├── models/                 ← Clases de acceso a datos
+│   ├── caja_cordes_20260617_2024.sql  <- Dump completo (esquema + datos)
+│   ├── security.sql                   <- Politicas de seguridad RLS
+│   └── update_schema.sql              <- Actualizaciones de esquema
+├── models/                 <- Clases de acceso a datos
 │   ├── Cita.php
 │   ├── Paciente.php
 │   └── ...
 ├── public/
-│   ├── index.php           ← Bootstrap de la aplicación
-│   ├── router.php          ← Router para servidor de desarrollo PHP
-│   ├── css/                ← Estilos (style.css, theme.css)
-│   ├── js/                 ← Scripts (theme.js, etc.)
-│   └── uploads/            ← Archivos subidos por usuarios
+│   ├── index.php           <- Bootstrap de la aplicación
+│   ├── router.php          <- Router para servidor de desarrollo PHP
+│   ├── css/                <- Estilos (style.css, theme.css)
+│   ├── js/                 <- Scripts (theme.js, etc.)
+│   └── uploads/            <- Archivos subidos por usuarios
 └── views/
     ├── layouts/
-    │   ├── header.php      ← Cabecera HTML
-    │   ├── sidebar.php     ← Menú lateral
-    │   └── footer.php      ← Pie de página
-    ├── auth/               ← Login, 2FA, recuperar contraseña
-    ├── citas/              ← Módulo de citas médicas
-    ├── pacientes/          ← Módulo de pacientes
-    ├── dashboard/          ← Mi Portal (estadísticas)
-    ├── farmacia/           ← Módulo de farmacia
-    ├── historia_clinica/   ← Expediente clínico
-    ├── hospitalizacion/    ← Control de camas
-    ├── laboratorio/        ← Resultados de laboratorio
-    ├── facturacion/        ← Facturación
-    ├── insumo/             ← Inventario de insumos
-    └── sucursal/           ← Gestión de sucursales
+    │   ├── header.php      <- Cabecera HTML
+    │   ├── sidebar.php     <- Menú lateral
+    │   └── footer.php      <- Pie de página
+    ├── auth/               <- Login, 2FA, recuperar contraseña
+    ├── citas/              <- Módulo de citas médicas
+    ├── pacientes/          <- Módulo de pacientes
+    ├── dashboard/          <- Mi Portal (estadísticas)
+    ├── farmacia/           <- Módulo de farmacia
+    ├── historia_clinica/   <- Expediente clínico
+    ├── hospitalizacion/    <- Control de camas
+    ├── laboratorio/        <- Resultados de laboratorio
+    ├── facturacion/        <- Facturación
+    ├── insumo/             <- Inventario de insumos
+    ├── sucursal/           <- Gestión de sucursales
+    └── backups/            <- Gestión de backups de la BD
 ```
 
 ---
@@ -228,6 +267,7 @@ Caja_CordesSIS/
 | Ausencias Médicas | `/ausencias` | Administrativo |
 | Reportes | `/reportes/citas` | Administrativo, Directivo |
 | Perfil | `/perfil` | Todos |
+| Backups BD | `/backups` | Administrativo, Directivo |
 
 ---
 
@@ -237,7 +277,7 @@ Caja_CordesSIS/
 
 ```powershell
 # pg_dump en este equipo está en E:\PostgreSQL\bin\
-$env:PGPASSWORD = "209956"
+$env:PGPASSWORD = "TU_CONTRASENA_AQUI"
 $fecha = Get-Date -Format 'yyyyMMdd_HHmm'
 & "E:\PostgreSQL\bin\pg_dump.exe" `
     -U postgres `
@@ -257,10 +297,10 @@ Remove-Item "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_FECHA_ANTERIOR.
 
 ```powershell
 # Restaurar desde SQL plano:
-$env:PGPASSWORD = "209956"
+$env:PGPASSWORD = "TU_CONTRASENA_AQUI"
 & "E:\PostgreSQL\bin\psql.exe" `
     -U postgres -h 127.0.0.1 -d caja_cordes `
-    -f "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_20260614_1855.sql"
+    -f "f:\Pablo Medina\Caja_CordesSIS\database\caja_cordes_20260617_2024.sql"
 ```
 
 ---
@@ -288,6 +328,10 @@ $env:PGPASSWORD = "209956"
 ### El 2FA no envía correo
 - El sistema usa `mail()` de PHP. Verifica que tu servidor SMTP esté configurado en `php.ini`
 - En desarrollo puedes revisar los tokens directamente en la tabla `usuarios` de la BD
+
+### Error al cargar el SQL: "role does not exist" o "permission denied"
+- Conéctate como superusuario `postgres` al ejecutar los scripts
+- Si el error es en `security.sql`, ejecuta primero el dump principal y luego `security.sql`
 
 ---
 

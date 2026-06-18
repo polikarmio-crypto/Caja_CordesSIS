@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict r5LnUALtzAIHshnSRBROEAczRVxmRkgKYG0pcsygZN7IVyVOzLybd8vB1wVlWZG
+\restrict uDB8DWoJJ9eWhFhDep4cAbDrSmxUkMFN5ln5U2BGLhrb9ilwe7RshiHugU1eizJ
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
@@ -7456,6 +7456,17 @@ COPY public.auditoria (id, usuario_id, accion, tabla, fecha) FROM stdin;
 6133	5003	Inicio de sesión exitoso con 2FA	usuarios	2026-06-14 18:37:32.645514
 6134	5001	Generó código 2FA: 453208	usuarios	2026-06-14 18:38:37.381769
 6135	5001	Inicio de sesión exitoso con 2FA	usuarios	2026-06-14 18:38:43.234973
+6136	5001	Generó código 2FA: 870353	usuarios	2026-06-15 14:20:06.723937
+6137	5001	Inicio de sesión exitoso con 2FA	usuarios	2026-06-15 14:20:15.022034
+6138	5001	Exportar CSV Citas	citas	2026-06-15 14:24:22.608787
+6139	5001	Exportar CSV Citas	citas	2026-06-15 14:52:24.935199
+6140	5001	Generó código 2FA: 665208	usuarios	2026-06-15 15:37:00.506301
+6141	5001	Inicio de sesión exitoso con 2FA	usuarios	2026-06-15 15:37:08.634108
+6142	5001	Exportar CSV Citas	citas	2026-06-15 15:45:53.925507
+6143	5001	Generó código 2FA: 945519	usuarios	2026-06-17 19:26:20.241259
+6144	5001	Generó código 2FA: 659170	usuarios	2026-06-17 19:26:44.990225
+6145	5001	Inicio de sesión exitoso con 2FA	usuarios	2026-06-17 19:26:53.83715
+6146	5001	Exportar CSV Citas	citas	2026-06-17 19:30:28.039862
 \.
 
 
@@ -7466,6 +7477,14 @@ COPY public.auditoria (id, usuario_id, accion, tabla, fecha) FROM stdin;
 COPY public.ausencias_medicos (id, medico_id, fecha_inicio, fecha_fin, motivo, creado_en) FROM stdin;
 1	2	2026-06-11 17:13:00	2026-06-10 17:14:00	capa	2026-06-12 15:15:43.935654
 2	101	2026-06-10 17:17:00	2026-06-15 17:17:00	Licencia Medica	2026-06-14 17:17:45.866125
+3	4	2026-07-01 08:00:00	2026-07-05 18:00:00	Vacaciones anuales programadas.	2026-06-15 09:00:00
+4	12	2026-06-25 07:00:00	2026-06-27 18:00:00	Congreso Internacional de Cardiología en Santa Cruz.	2026-06-15 10:30:00
+5	18	2026-06-19 08:00:00	2026-06-19 18:00:00	Licencia por paternidad.	2026-06-16 08:00:00
+6	25	2026-06-22 08:00:00	2026-06-24 18:00:00	Capacitación en nuevos protocolos de cuidados intensivos.	2026-06-16 11:00:00
+7	30	2026-07-10 08:00:00	2026-07-12 18:00:00	Licencia médica certificada.	2026-06-17 08:30:00
+8	45	2026-06-20 08:00:00	2026-06-20 18:00:00	Asuntos particulares autorizados.	2026-06-17 09:45:00
+9	68	2026-06-26 08:00:00	2026-06-30 18:00:00	Participación en brigada médica rural.	2026-06-17 14:00:00
+10	84	2026-07-05 08:00:00	2026-07-07 18:00:00	Curso de posgrado en ecografía avanzada.	2026-06-17 15:30:00
 \.
 
 
@@ -7482,11 +7501,11 @@ COPY public.calificaciones (id, cita_id, paciente_id, medico_id, puntuacion, com
 --
 
 COPY public.camas (id, habitacion_id, numero_cama, estado) FROM stdin;
-2	1	101-B	libre
 3	2	102-A	libre
 4	3	103-A	libre
 5	3	103-B	libre
-1	1	101-A	libre
+2	1	101-B	ocupada
+1	1	101-A	ocupada
 \.
 
 
@@ -7495,6 +7514,11 @@ COPY public.camas (id, habitacion_id, numero_cama, estado) FROM stdin;
 --
 
 COPY public.categorias_insumo (id, nombre, descripcion, estado) FROM stdin;
+1	Material Quirúrgico	Instrumental y vestimenta descartable para cirugías y procedimientos.	activo
+2	Material de Oficina	Insumos de escritorio, papelería y administración de consultorios.	activo
+3	Equipo Médico Desechable	Jeringas, agujas, catéteres, guantes y otros materiales desechables.	activo
+4	Limpieza e Higiene	Productos para la sanitización y desinfección de áreas clínicas.	activo
+5	Reactivos de Laboratorio	Sustancias y tubos de ensayo para procesamiento de muestras.	activo
 \.
 
 
@@ -13561,6 +13585,36 @@ COPY public.examenes_catalogo (id, nombre, tipo_muestra) FROM stdin;
 --
 
 COPY public.factura_detalles (id, factura_id, concepto, cantidad, precio_unitario, subtotal) FROM stdin;
+1	1	Consulta médica general	1	50.00	50.00
+2	1	Hemograma Completo (Lab)	1	70.00	70.00
+3	2	Consulta médica general	1	50.00	50.00
+4	2	Glucosa en Ayunas (Lab)	1	60.00	60.00
+5	2	Paracetamol 500mg (medicamento)	80	0.50	40.00
+6	3	Perfil Lipídico (Lab)	1	120.00	120.00
+7	3	Atorvastatina 20mg (medicamento)	80	2.00	160.00
+8	4	Día de Hospitalización (cama común)	2	150.00	300.00
+9	4	Servicios de enfermería y oxígeno	1	150.00	150.00
+10	5	Derecho de Quirófano y Anestesia	1	1000.00	1000.00
+11	5	Honorarios Cirujano / Ayudante	1	800.00	800.00
+12	6	Día de Hospitalización	5	100.00	500.00
+13	6	Ceftriaxona 1g (medicamento)	6	20.00	120.00
+14	7	Laboratorios y electrolitos	1	110.00	110.00
+15	7	Suero Fisiológico 1000ml + vías	4	50.00	200.00
+16	8	Procedimiento quirúrgico de hernia	1	600.00	600.00
+17	8	Insumos quirúrgicos y suturas	1	150.00	150.00
+18	9	Día de Hospitalización	4	150.00	600.00
+19	9	Insulina y reactivos de control	1	290.00	290.00
+20	10	Observación médica (24 horas)	1	200.00	200.00
+21	10	Estudio tomográfico básico	1	200.00	200.00
+22	11	Reducción de fractura y yeso	1	800.00	800.00
+23	11	Día de Hospitalización (traumatología)	2	250.00	500.00
+24	11	Materiales de yeso y vendajes	1	200.00	200.00
+25	12	Día de Hospitalización	1	150.00	150.00
+26	12	Antibióticos EV y protector gástrico	1	200.00	200.00
+27	13	Consulta de Especialidad (Nefrología)	1	80.00	80.00
+28	14	Prueba de laboratorio PCR COVID-19	1	200.00	200.00
+29	15	Hemograma Completo	1	75.00	75.00
+30	15	Complejo B (medicamento)	50	0.40	20.00
 \.
 
 
@@ -13569,6 +13623,21 @@ COPY public.factura_detalles (id, factura_id, concepto, cantidad, precio_unitari
 --
 
 COPY public.facturas (id, paciente_id, total, estado, motivo, fecha_emision) FROM stdin;
+1	5	120.00	pagada	Cobro por consulta externa y laboratorios básicos.	2026-06-10 14:30:00
+2	12	150.00	pagada	Cobro por atención médica y examen de glucosa.	2026-06-10 15:00:00
+3	18	280.00	pagada	Perfil lipídico completo y medicamentos recetados.	2026-06-12 11:00:00
+4	25	450.00	pagada	Servicio de hospitalización por crisis asmática (2 días).	2026-06-14 16:30:00
+5	34	1800.00	pagada	Derechos de quirófano y cirugía de colecistectomía.	2026-06-21 12:00:00
+6	45	620.00	pagada	Hospitalización neumonía (5 días) y antibióticos EV.	2026-05-30 11:00:00
+7	3	310.00	pagada	Tratamiento de hidratación endovenosa y laboratorios.	2026-06-03 13:00:00
+8	19	750.00	pagada	Cirugía menor de hernia inguinal y anestesia local.	2026-06-06 11:00:00
+9	28	890.00	pendiente	Hospitalización por cetoacidosis diabética y laboratorios.	2026-06-14 16:00:00
+10	42	400.00	pendiente	Servicios de diagnóstico por imagen y observación neurológica.	2026-06-14 11:30:00
+11	8	1500.00	pendiente	Servicio de traumatología y estabilización de fractura de tibia.	2026-06-17 09:00:00
+12	22	350.00	pendiente	Medicamentos endovenosos y internación inicial por pielonefritis.	2026-06-17 11:30:00
+13	15	80.00	pagada	Consulta externa de Nefrología.	2026-06-14 10:00:00
+14	50	200.00	pagada	Prueba de laboratorio PCR COVID-19.	2026-06-17 17:30:00
+15	1	95.00	pagada	Hemograma completo y medicamentos prescritos.	2026-06-14 15:30:00
 \.
 
 
@@ -13600,6 +13669,37 @@ COPY public.hc_archivos (id, hc_id, archivo_ruta) FROM stdin;
 COPY public.hc_diagnosticos (id, hc_id, diagnostico) FROM stdin;
 1	1	el paciente presenta una evolucion en su cuadro de su infeccio respiratoria
 2	2	sdf
+3	3	Hipertensión arterial esencial. Paciente presenta cefalea recurrente. Se indica control de presión diario.
+4	4	Faringoamigdalitis aguda bacteriana. Presenta placas purulentas en amígdalas y fever de 38.8 °C.
+5	5	Bronquitis aguda no especificada. Tos con expectoración mucopurulenta, sibilancias bilaterales leves.
+6	6	Diabetes mellitus tipo 2 descompensada. Paciente refiere poliuria y polidipsia. Glicemia en ayunas elevada.
+7	7	Gastroenteritis infecciosa. Cuadro de 48 horas de evolución con diarrea, náuseas y deshidratación leve.
+8	8	Lumbalgia mecánica aguda. Dolor intenso en región lumbar baja tras esfuerzo físico. Sin signos de radiculopatía.
+9	9	Infección del tracto urinario baja (Cistitis). Disuria, polaquiuria y tenesmo vesical de inicio abrupto.
+10	10	Otitis media aguda derecha. Dolor lancinante en oído derecho con membrana timpánica eritematosa y abombada.
+11	11	Asma bronquial crónico en crisis leve. Disnea y sibilancias desencadenadas por cambio de clima.
+12	12	Dermatitis atópica exacerbada. Lesiones eccematosas pruriginosas en pliegues flexores de codos y rodillas.
+13	13	Gastritis crónica asociada a Helicobacter pylori. Epigastralgia urente postprandial y pirosis nocturna.
+14	14	Conjuntivitis bacteriana bilateral. Hiperemia conjuntival, secreción mucopurulenta y lagrimeo abundante.
+15	15	Insuficiencia renal crónica estadio 3. Control de laboratorio revela elevación progresiva de urea y creatinina.
+16	16	Ansiedad generalizada y trastornos del sueño. Paciente con insomnio de conciliación y palpitaciones.
+17	17	Esguince de tobillo izquierdo grado I. Edema y dolor en ligamento peroneoastragalino anterior.
+18	18	Cefalea tensional crónica. Dolor holocraneano opresivo de intensidad moderada exacerbado por estrés.
+19	19	Rinitis alérgica perenne. Rinorrea hialina, estornudos en salva y congestión nasal bilateral.
+20	20	Colelitiasis. Dolor tipo cólico en hipocondrio derecho postprandial. Se sugiere ecografía abdominal.
+21	21	Anemia ferropénica moderada. Paciente refiere astenia marcada, palidez mucocutánea y fatiga al esfuerzo.
+22	22	Candidiasis cutánea. Placa eritematosa descamativa pruriginosa en región inguinal.
+23	23	Control prenatal de 20 semanas de gestación. Embarazo de curso fisiológico sin complicaciones actuales.
+24	24	Fiebre tifoidea en etapa inicial. Cefalea intensa, fiebre sostenida y malestar general generalizado.
+25	25	Artritis reumatoide. Rigidez matutina mayor a 1 hora y dolor articular simétrico en manos.
+26	26	Neumonía adquirida en la comunidad típica. Fiebre, tos productiva y estertores crepitantes en base derecha.
+27	27	Hipotiroidismo primario en tratamiento. Fatiga mental, piel seca y estreñimiento leve.
+28	28	Parasitosis intestinal (Amebiasis). Dolor abdominal difuso y deposiciones semilíquidas con moco.
+29	29	Hernia inguinal derecha reducible. Aumento de volumen en región inguinal con el esfuerzo físico.
+30	30	Varices en miembros inferiores grado II. Sensación de pesadez y edema vespertino bilateral.
+31	31	Hiperplasia prostática benigna grado I. Sintomatología obstructiva urinaria leve. Flujo débil.
+32	32	Gota aguda (Podagra). Dolor articular severo con eritema y calor local en primer metatarsofalángica del pie.
+33	33	Faringitis viral simple. Congestión faríngea, odinofagia leve sin adenomegalias ni placas.
 \.
 
 
@@ -13610,6 +13710,37 @@ COPY public.hc_diagnosticos (id, hc_id, diagnostico) FROM stdin;
 COPY public.historia_clinica (id, paciente_id, medico_id, cita_id, fecha_registro) FROM stdin;
 1	1	2	\N	2026-05-05 19:35:51
 2	1	1	\N	2026-05-05 19:39:38
+3	53	50	2	2026-06-10 09:15:00
+4	2194	49	7	2026-06-10 10:30:00
+5	4487	69	8	2026-06-10 11:45:00
+6	4729	42	9	2026-06-11 08:30:00
+7	2702	65	10	2026-06-11 09:45:00
+8	1900	58	20	2026-06-11 11:00:00
+9	1681	5	23	2026-06-12 09:00:00
+10	3567	43	26	2026-06-12 10:15:00
+11	4475	14	29	2026-06-12 11:30:00
+12	2784	1	32	2026-06-13 08:30:00
+13	1690	48	34	2026-06-13 09:45:00
+14	3847	45	35	2026-06-13 11:00:00
+15	4606	40	37	2026-06-14 09:00:00
+16	1132	77	38	2026-06-14 10:15:00
+17	4494	77	40	2026-06-14 11:30:00
+18	3664	4	41	2026-06-15 08:30:00
+19	720	21	44	2026-06-15 09:45:00
+20	1369	68	45	2026-06-15 11:00:00
+21	4259	54	48	2026-06-16 09:00:00
+22	1454	97	49	2026-06-16 10:15:00
+23	1	2	\N	2026-06-01 09:00:00
+24	2	3	\N	2026-06-01 10:00:00
+25	3	4	\N	2026-06-02 11:00:00
+26	4	5	\N	2026-06-02 14:00:00
+27	5	6	\N	2026-06-03 15:30:00
+28	6	7	\N	2026-06-03 16:00:00
+29	7	8	\N	2026-06-04 09:30:00
+30	8	9	\N	2026-06-04 10:45:00
+31	9	10	\N	2026-06-05 11:15:00
+32	10	11	\N	2026-06-05 12:00:00
+33	11	12	\N	2026-06-06 08:30:00
 \.
 
 
@@ -14304,6 +14435,16 @@ COPY public.hospitalizaciones (id, paciente_id, cama_id, fecha_ingreso, motivo_i
 2	16	1	2026-06-09 13:04:03.663475	Internacion	2026-06-09 13:04:13.936071	ya se recupero
 3	3726	1	2026-06-09 15:56:45.508616	reyt\r\n	2026-06-09 15:56:52.46393	ret
 4	3726	1	2026-06-12 15:44:39.913802	ASD	2026-06-12 15:44:58.700443	ASD
+5	12	1	2026-05-10 10:00:00	Dengue con signos de alarma. Monitoreo hemodinámico y reposición de líquidos.	2026-05-15 14:30:00	Paciente estable, recuento plaquetario en ascenso (180,000/uL). Tolerancia oral adecuada. Alta hospitalaria con indicación de reposo en domicilio.
+6	25	2	2026-05-12 11:30:00	Crisis asmática severa no respondiente a tratamiento ambulatorio.	2026-05-14 16:00:00	Crisis resuelta con corticoides sistémicos y nebulizaciones. Buena ventilación pulmonar sin sibilancias. Se indica tratamiento de control.
+7	34	3	2026-05-18 09:00:00	Colecistitis aguda. Programado para colecistectomía laparoscópica de urgencia.	2026-05-21 11:00:00	Cirugía sin complicaciones. Evolución postoperatoria favorable. Tolerando dieta blanda. Retiro de puntos en 10 días por consulta externa.
+8	45	4	2026-05-25 15:00:00	Neumonía adquirida en la comunidad con disnea moderada.	2026-05-30 10:30:00	Buena respuesta al tratamiento antibiótico endovenoso (Ceftriaxona). Afebril por 48 horas. Continúa amoxicilina vía oral en domicilio.
+9	3	5	2026-06-01 08:30:00	Gastroenteritis aguda con deshidratación severa y shock hipovolémico inicial.	2026-06-03 12:00:00	Deshidratación corregida. Paciente afebril, sin episodios de vómito ni diarrea en las últimas 24 horas. Alta con dieta astringente.
+10	19	2	2026-06-05 14:00:00	Control postoperatorio inmediato de hernia inguinal derecha.	2026-06-06 10:00:00	Evolución favorable, dolor postquirúrgico controlado con analgésicos básicos. Herida limpia y seca. Deambulación temprana exitosa.
+11	28	3	2026-06-10 11:00:00	Cetoacidosis diabética. Corrección con infusión de insulina.	2026-06-14 15:30:00	Estado metabólico compensado. pH y bicarbonato en rangos normales. Transición exitosa a insulina subcutánea. Coordinado con endocrinología.
+12	42	4	2026-06-12 09:30:00	Accidente cerebrovascular isquémico transitorio en observación.	2026-06-14 11:00:00	Sintomatología neurológica revertida por completo. RMN cerebral sin lesiones agudas extensas. Egresa con antiagregación plaquetaria.
+13	8	1	2026-06-17 08:00:00	Fractura expuesta de tibia y peroné izquierdo. En espera de material para osteosíntesis.	\N	\N
+14	22	2	2026-06-17 10:30:00	Pielonefritis aguda grave. Fiebre alta y dolor lumbar intenso. Tratamiento antibiótico EV en curso.	\N	\N
 \.
 
 
@@ -14312,6 +14453,22 @@ COPY public.hospitalizaciones (id, paciente_id, cama_id, fecha_ingreso, motivo_i
 --
 
 COPY public.insumos (id, nombre, descripcion, precio_unitario, cantidad, estado, id_categoria, activo) FROM stdin;
+1	Bisturí Estéril Nro 15	Bisturí de acero inoxidable para procedimientos quirúrgicos menores.	4.50	120	Disponible	1	t
+2	Gasas Estériles 10x10cm	Paquete de 10 unidades de gasa de algodón hidrófilo.	2.80	500	Disponible	1	t
+3	Hilo de Sutura Nylon 3-0	Sutura monofilamento no absorbible con aguja cortante.	12.00	150	Disponible	1	t
+4	Papel Bond A4 75g	Resma de papel bond blanco de 500 hojas para recetas e informes.	35.00	80	Disponible	2	t
+5	Bolígrafos Azules Bic	Caja de 50 bolígrafos de tinta azul para consultorios.	25.00	10	Disponible	2	t
+6	Jeringas 5ml con Aguja 21G	Caja de 100 jeringas descartables de tres cuerpos.	45.00	200	Disponible	3	t
+7	Jeringas 10ml con Aguja 21G	Caja de 100 jeringas descartables de tres cuerpos.	55.00	150	Disponible	3	t
+8	Guantes de Látex Talla M	Caja de 100 guantes de examen de látex sin polvo.	48.00	300	Disponible	3	t
+9	Guantes Estériles Quirúrgicos 7.5	Par de guantes quirúrgicos de látex estériles.	6.50	400	Disponible	3	t
+10	Catéter Endovenoso 22G	Caja de 50 catéteres intravenosos periféricos (Teflón).	110.00	60	Disponible	3	t
+11	Alcohol Etílico 70% 1L	Frasco de 1 litro de alcohol desinfectante antiséptico.	18.00	90	Disponible	4	t
+12	Jabón Líquido Antiséptico 5L	Galón de 5 litros de jabón para lavado clínico de manos.	65.00	15	Disponible	4	t
+13	Cloro Concentrado 5L	Desinfectante a base de hipoclorito de sodio al 5%.	22.00	25	Disponible	4	t
+14	Tubos de Ensayo Tapa Roja	Gradilla de 100 tubos de recolección de sangre seca (química).	85.00	40	Disponible	5	t
+15	Tubos EDTA Tapa Lila	Gradilla de 100 tubos de recolección de sangre con anticoagulante.	90.00	35	Disponible	5	t
+16	Puntas para Pipeta 100-1000ul	Bolsa de 1000 puntas descartables azules para micropipeta.	75.00	8	Disponible	5	t
 \.
 
 
@@ -14332,6 +14489,26 @@ COPY public.medicamentos (id, nombre, tipo, stock, vencimiento, precio_unitario,
 11	Paracetamol Jarabe	Jarabe	120	2027-04-30	8.50	MED-011	t
 12	Complejo B	Tabletas	500	2029-05-31	0.40	MED-012	t
 4	Amoxicilina 500mg	Cápsulas	150	2027-06-30	1.50	MED-004	t
+13	Diclofenaco Sódico 75mg/3ml	Ampollas	100	2028-05-31	3.20	MED-013	t
+14	Ceftriaxona 1g	Ampollas	80	2027-12-31	18.50	MED-014	t
+15	Azitromicina 500mg	Tabletas	120	2028-04-30	4.50	MED-015	t
+16	Enalapril 10mg	Tabletas	300	2029-02-28	0.70	MED-016	t
+17	Amlodipina 5mg	Tabletas	250	2028-10-31	0.80	MED-017	t
+18	Ciprofloxacina 500mg	Tabletas	180	2027-11-30	2.50	MED-018	t
+19	Metoclopramida 10mg	Tabletas	150	2028-06-30	0.60	MED-019	t
+20	Ketorolaco 10mg	Tabletas	200	2028-07-31	1.20	MED-020	t
+21	Dexametasona 4mg/2ml	Ampollas	140	2027-09-30	2.80	MED-021	t
+22	Sertralina 50mg	Tabletas	90	2029-03-31	3.50	MED-022	t
+23	Fluconazol 150mg	Cápsulas	110	2028-08-31	5.00	MED-023	t
+24	Ranitidina 150mg	Tabletas	400	2027-08-31	0.50	MED-024	t
+25	Multivitamínico Jarabe	Jarabe	95	2027-03-31	12.00	MED-025	t
+26	Clonazepam 2mg	Tabletas	150	2028-11-30	1.80	MED-026	t
+27	Aspirina 100mg	Tabletas	500	2029-04-30	0.30	MED-027	t
+28	Glibenclamida 5mg	Tabletas	320	2028-12-31	0.60	MED-028	t
+29	Sal de Rehidratación Oral	Sobres	250	2028-01-31	3.50	MED-029	t
+30	Prednisona 20mg	Tabletas	180	2027-07-31	1.50	MED-030	t
+31	Clorfeniramina 4mg	Tabletas	450	2028-10-31	0.40	MED-031	t
+32	Tramadol Gotas 100mg/ml	Frasco	60	2027-05-31	15.00	MED-032	t
 \.
 
 
@@ -19513,6 +19690,35 @@ COPY public.pacientes (id, usuario_id, ci, nombres, apellidos, fecha_nac, activo
 COPY public.receta_medicamentos (receta_id, medicamento_id, dosis, frecuencia, duracion_dias) FROM stdin;
 1	1	50mg	8h	7
 2	1	500mg	8h	7
+3	16	1 tableta (10mg)	cada 12 horas	30
+4	4	1 cápsula (500mg)	cada 8 horas	7
+4	3	1 tableta (400mg)	cada 8 horas	3
+5	11	10 ml (jarabe)	cada 8 horas	5
+5	10	2 inhalaciones (puff)	cada 6 horas	5
+6	7	1 tableta (850mg)	cada 12 horas (con comidas)	30
+7	29	1 sobre en 1L de agua	a libre demanda	3
+7	19	1 tableta (10mg)	cada 8 horas (antes de alimentos)	3
+8	20	1 tableta (10mg)	cada 8 horas	5
+9	18	1 tableta (500mg)	cada 12 horas	7
+10	3	1 tableta (400mg)	cada 8 horas	5
+10	4	1 cápsula (500mg)	cada 8 horas	7
+11	10	2 inhalaciones (puff)	cada 4 horas	5
+11	30	1 tableta (20mg)	cada 24 horas	3
+12	5	1 tableta (10mg)	cada 24 horas	10
+13	6	1 cápsula (20mg)	cada 24 horas (en ayunas)	30
+14	21	2 gotas en ojo afectado	cada 6 horas	7
+15	12	1 tableta	cada 24 horas	30
+16	26	1/2 tableta (1mg)	cada 24 horas (antes de acostarse)	15
+17	2	1 tableta (500mg)	cada 8 horas	3
+18	5	1 tableta (10mg)	cada 24 horas	15
+19	12	1 tableta	cada 12 horas	30
+20	23	1 cápsula (150mg)	una vez a la semana	14
+21	14	1 ampolla (1g IM)	cada 24 horas	5
+21	2	1 tableta (500mg)	cada 6 horas (en caso de fiebre)	3
+22	15	1 tableta (500mg)	cada 24 horas	5
+22	3	1 tableta (400mg)	cada 8 horas	5
+23	19	1 tableta (10mg)	cada 8 horas	3
+24	20	1 tableta (10mg)	cada 8 horas	3
 \.
 
 
@@ -19523,6 +19729,28 @@ COPY public.receta_medicamentos (receta_id, medicamento_id, dosis, frecuencia, d
 COPY public.recetas (id, hc_id, indicaciones_generales, fecha_creacion, estado_despacho) FROM stdin;
 1	1	se recomienda tomar un paracetamol de 500mg cada 8 horas	2026-05-05 15:35:51	entregado
 2	2	sdf	2026-05-05 15:39:38	entregado
+3	3	Tomar Enalapril por las mañanas. Evitar el consumo excesivo de sal y realizar caminatas diarias de 30 minutos.	2026-06-10 09:20:00	entregado
+4	4	Completar el tratamiento antibiótico. Tomar abundante líquido y reposar por 3 días.	2026-06-10 10:35:00	entregado
+5	5	Nebulizaciones si hay dificultad respiratoria. Tomar el jarabe para la tos. Controlar la fiebre.	2026-06-10 11:50:00	pendiente
+6	6	Dieta estricta para diabéticos. Tomar Metformina con las comidas principales. Control de glicemia capilar.	2026-06-11 08:35:00	entregado
+7	7	Hidratación oral constante con sales de rehidratación. Dieta blanda (arroz, pollo hervido, manzana).	2026-06-11 09:50:00	entregado
+8	8	Reposo en cama dura por 48 horas. Aplicar compresas tibias en la zona lumbar.	2026-06-11 11:05:00	pendiente
+9	9	Tomar antibiótico indicado. Incrementar ingesta de agua a 3 litros diarios.	2026-06-12 09:05:00	entregado
+10	10	Aplicar gotas óticas según prescripción. Evitar el ingreso de agua al oído derecho.	2026-06-12 10:20:00	entregado
+11	11	Uso del inhalador ante crisis. Evitar exposición a alérgenos, humo de tabaco y frío.	2026-06-12 11:35:00	pendiente
+12	12	Aplicar crema hidratante en zonas afectadas. Evitar jabones con fragancia.	2026-06-13 08:35:00	entregado
+13	13	Evitar alimentos picantes, café y grasas. Tomar protector gástrico en ayunas.	2026-06-13 09:50:00	entregado
+14	14	Lavado de manos frecuente. Limpiar secreciones con gasa estéril y suero fisiológico.	2026-06-13 11:05:00	entregado
+15	15	Dieta hiposódica e hipoproteica. Evitar automedicación, especialmente antiinflamatorios (AINEs).	2026-06-14 09:05:00	pendiente
+16	16	Evitar pantallas antes de dormir. Tomar infusión relajante y la medicación antes de acostarse.	2026-06-14 10:20:00	entregado
+17	18	Evitar situaciones de estrés. Compresas frías en la frente y masajes en el cuello.	2026-06-15 08:35:00	entregado
+18	19	Evitar alfombras y peluches en la habitación. Uso de spray nasal diario.	2026-06-15 09:50:00	pendiente
+19	21	Consumir alimentos ricos en hierro (espinaca, lentejas, carnes rojas). Evitar tomar té con las comidas.	2026-06-16 09:05:00	entregado
+20	22	Mantener la zona inguinal bien seca después del baño. Aplicar crema micótica.	2026-06-16 10:20:00	entregado
+21	24	Dieta líquida fraccionada inicialmente. Reposo absoluto en cama y control de temperatura.	2026-06-01 10:05:00	entregado
+22	26	Uso de nebulizador si hay disnea. Acudir a emergencias si hay cianosis o disnea severa.	2026-06-02 14:05:00	pendiente
+23	28	Hervir el agua de consumo. Lavado riguroso de frutas y verduras antes de consumir.	2026-06-03 16:05:00	entregado
+24	32	Dieta baja en purinas (evitar carnes rojas y mariscos). Abundante agua.	2026-06-05 12:05:00	entregado
 \.
 
 
@@ -19532,6 +19760,26 @@ COPY public.recetas (id, hc_id, indicaciones_generales, fecha_creacion, estado_d
 
 COPY public.resultados_laboratorio (id, paciente_id, examen_id, fecha_solicitud, fecha_resultado, resultado, valores_referencia, estado) FROM stdin;
 1	3	4	2026-05-05 15:22:59	2026-05-05 15:22:59	el resultado muestra que el paciente puede tener una infeccion renal	60	completado
+2	5	1	2026-06-10 08:00:00	2026-06-10 14:00:00	Glóbulos Rojos: 4.8 M/uL, Hemoglobina: 14.2 g/dL, Hematocrito: 42%, Glóbulos Blancos: 7.5 K/uL, Plaquetas: 250 K/uL. Todos los parámetros se encuentran dentro de los rangos normales.	HGB: 12-16 g/dL, WBC: 4-11 K/uL, PLT: 150-450 K/uL	listo
+3	12	2	2026-06-10 08:15:00	2026-06-10 13:30:00	Glucosa en ayunas: 135 mg/dL. Se observa hiperglicemia moderada.	70-100 mg/dL (Normal), 100-125 mg/dL (Prediabetes), >=126 mg/dL (Diabetes)	listo
+4	18	3	2026-06-11 09:00:00	2026-06-12 10:00:00	Colesterol Total: 240 mg/dL (Elevado), Triglicéridos: 195 mg/dL (Elevado), HDL: 42 mg/dL (Bajo), LDL: 159 mg/dL (Elevado).	Colesterol: <200 mg/dL, Triglicéridos: <150 mg/dL	listo
+5	23	4	2026-06-11 09:30:00	2026-06-11 15:00:00	Aspecto: Claro, Color: Amarillo pajizo, Densidad: 1.018, pH: 6.0, Proteínas: Negativo, Glucosa: Negativo, Leucocitos: 1-2 por campo, Celulas Epiteliales: Escasas.	Leucocitos: 0-5 por campo, Proteínas: Negativo	listo
+6	30	5	2026-06-12 10:00:00	2026-06-12 12:00:00	Prueba de embarazo en orina (Inmunocromatografía): POSITIVO.	Negativo / Positivo	listo
+7	34	6	2026-06-12 11:00:00	2026-06-13 09:00:00	Detección de ARN de SARS-CoV-2 por RT-PCR: NEGATIVO.	Negativo	listo
+8	40	1	2026-06-13 08:00:00	\N	Muestra recibida. En proceso de análisis en el departamento de hematología.	HGB: 12-16 g/dL	pendiente
+9	3	2	2026-06-13 08:30:00	\N	Muestra de suero en incubación. Procesamiento automatizado programado.	70-100 mg/dL	pendiente
+10	15	3	2026-06-13 09:00:00	2026-06-14 14:00:00	Colesterol Total: 185 mg/dL (Normal), Triglicéridos: 130 mg/dL (Normal), HDL: 52 mg/dL, LDL: 107 mg/dL.	Colesterol: <200 mg/dL, Triglicéridos: <150 mg/dL	listo
+11	27	4	2026-06-14 08:30:00	2026-06-14 12:30:00	Aspecto: Turbio (Moderado), Color: Amarillo oscuro, Nitritos: POSITIVO, Leucocitos: 18-20 por campo, Bacterias: Abundantes.	Bacterias: Negativo / Escasas, Nitritos: Negativo	listo
+12	1	1	2026-06-14 09:00:00	2026-06-14 15:00:00	Glóbulos Rojos: 3.2 M/uL (Bajo), Hemoglobina: 9.8 g/dL (Bajo), Hematocrito: 30% (Bajo). Se confirma cuadro de anemia moderada.	HGB: 12-16 g/dL	listo
+13	8	2	2026-06-15 08:00:00	2026-06-15 11:00:00	Glucosa en ayunas: 95 mg/dL. Niveles de glicemia normales.	70-100 mg/dL	listo
+14	19	6	2026-06-15 08:30:00	\N	Muestra nasofaríngea recibida en sección de biología molecular. Extracción de ácidos nucleicos en curso.	Negativo	pendiente
+15	22	1	2026-06-15 10:00:00	2026-06-15 16:00:00	Glóbulos Rojos: 4.5 M/uL, Hemoglobina: 13.8 g/dL, Hematocrito: 41%, Glóbulos Blancos: 14.8 K/uL (Elevado). Neutrófilos: 82%. Leucocitosis con desviación izquierda sugestiva de proceso infeccioso bacteriano.	WBC: 4-11 K/uL	listo
+16	29	3	2026-06-16 08:30:00	\N	Procesando perfil lipídico por espectrofotometría automatizada.	Colesterol: <200 mg/dL	pendiente
+17	32	4	2026-06-16 09:00:00	2026-06-16 13:00:00	Aspecto: Claro, Color: Amarillo, Densidad: 1.020, pH: 5.5. Sin alteraciones de relevancia clínica.	Densidad: 1.015-1.025	listo
+18	37	2	2026-06-16 09:15:00	2026-06-16 14:00:00	Glucosa en ayunas: 112 mg/dL. Prediabetes. Se sugiere control dietético y nueva valoración.	70-100 mg/dL	listo
+19	45	1	2026-06-17 08:00:00	2026-06-17 13:30:00	Glóbulos Rojos: 4.9 M/uL, Hemoglobina: 14.5 g/dL, Hematocrito: 43%, Glóbulos Blancos: 6.8 K/uL, Plaquetas: 210 K/uL.	HGB: 12-16 g/dL	listo
+20	48	5	2026-06-17 08:45:00	2026-06-17 11:00:00	Prueba de embarazo en orina: NEGATIVO.	Negativo / Positivo	listo
+21	50	6	2026-06-17 09:30:00	2026-06-17 17:00:00	Detección de ARN de SARS-CoV-2 por RT-PCR: NEGATIVO.	Negativo	listo
 \.
 
 
@@ -19584,8 +19832,8 @@ COPY public.usuarios (id, rol_id, email, password_hash, creado_en, intentos_fall
 99	3	jaquelineocasio@example.com	hashed_password	2026-05-03 02:33:02	0	\N	\N	\N	\N	\N	Dr. Jaquelineocasio	Médico	default_avatar.png
 100	3	jperez@example.net	hashed_password	2026-05-03 02:33:02	0	\N	\N	\N	\N	\N	Dr. Jperez	Médico	default_avatar.png
 5005	5	farmacia@cajacordes.com	$2y$10$aPa/hXlQXKahNpWy5SWSbOH7kSYyzoaRd1uIDEOMXsdM1POMtu3yy	2026-05-04 17:19:55	0	\N	\N	\N	\N	\N	Farmacéutico	De Guardia	default_avatar.png
-5002	3	usr_medico_1	$2y$10$Mxc6F2nRW.fh/bA41KHW3.v1MQc6KLlkZ5en1pVqtD3R/ewL0qdA2	2026-05-04 17:19:55	0	\N	\N	\N	\N	\N	Dr. Juan	Pérez	default_avatar.png
 5001	1	usr_admin_1	$2y$10$Iq3Z9YZLVAmxlGzyJ80zl.Byy18hGxCxzYAb11iyws4X80MXntDt2	2026-05-04 17:19:55	0	\N	6887c76e6b2b0d2e9d0904206d138de921df36095bee500a5fc4f407e66dec24	2026-06-12 14:43:18.767634	\N	\N	Administrador	Caja Cordes	default_avatar.png
+5002	3	usr_medico_1	$2y$10$Mxc6F2nRW.fh/bA41KHW3.v1MQc6KLlkZ5en1pVqtD3R/ewL0qdA2	2026-05-04 17:19:55	0	\N	\N	\N	\N	\N	Dr. Juan	Pérez	default_avatar.png
 101	2	reynosocristian@example.org	hashed_password	2026-05-03 02:33:02	0	\N	\N	\N	\N	\N	Pablo	Alva	default_avatar.png
 102	2	hector01@example.net	hashed_password	2026-05-03 02:33:02	0	\N	\N	\N	\N	\N	Horacio	Samaniego	default_avatar.png
 5011	4	laboratorio@cajacordes.com	$2y$10$eQiubJqhEFZdl9.XIueS/O3eKFeAcB1PhA3AH1L9VC1NrlzsmSA62	2026-05-05 19:11:28	0	\N	\N	\N	\N	\N	Laboratorista	De Guardia	default_avatar.png
@@ -24577,14 +24825,14 @@ COPY public.usuarios (id, rol_id, email, password_hash, creado_en, intentos_fall
 -- Name: auditoria_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auditoria_id_seq', 6135, true);
+SELECT pg_catalog.setval('public.auditoria_id_seq', 6146, true);
 
 
 --
 -- Name: ausencias_medicos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ausencias_medicos_id_seq', 2, true);
+SELECT pg_catalog.setval('public.ausencias_medicos_id_seq', 11, false);
 
 
 --
@@ -24605,7 +24853,7 @@ SELECT pg_catalog.setval('public.camas_id_seq', 5, true);
 -- Name: categorias_insumo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categorias_insumo_id_seq', 1, false);
+SELECT pg_catalog.setval('public.categorias_insumo_id_seq', 6, false);
 
 
 --
@@ -24633,14 +24881,14 @@ SELECT pg_catalog.setval('public.examenes_catalogo_id_seq', 6, true);
 -- Name: factura_detalles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.factura_detalles_id_seq', 1, true);
+SELECT pg_catalog.setval('public.factura_detalles_id_seq', 31, false);
 
 
 --
 -- Name: facturas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.facturas_id_seq', 1, true);
+SELECT pg_catalog.setval('public.facturas_id_seq', 16, false);
 
 
 --
@@ -24661,14 +24909,14 @@ SELECT pg_catalog.setval('public.hc_archivos_id_seq', 2, true);
 -- Name: hc_diagnosticos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.hc_diagnosticos_id_seq', 2, true);
+SELECT pg_catalog.setval('public.hc_diagnosticos_id_seq', 34, false);
 
 
 --
 -- Name: historia_clinica_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.historia_clinica_id_seq', 2, true);
+SELECT pg_catalog.setval('public.historia_clinica_id_seq', 34, false);
 
 
 --
@@ -24682,21 +24930,21 @@ SELECT pg_catalog.setval('public.horarios_medicos_id_seq', 677, true);
 -- Name: hospitalizaciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.hospitalizaciones_id_seq', 4, true);
+SELECT pg_catalog.setval('public.hospitalizaciones_id_seq', 15, false);
 
 
 --
 -- Name: insumos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.insumos_id_seq', 1, false);
+SELECT pg_catalog.setval('public.insumos_id_seq', 17, false);
 
 
 --
 -- Name: medicamentos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.medicamentos_id_seq', 12, true);
+SELECT pg_catalog.setval('public.medicamentos_id_seq', 33, false);
 
 
 --
@@ -24731,14 +24979,14 @@ SELECT pg_catalog.setval('public.pacientes_id_seq', 4903, true);
 -- Name: recetas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recetas_id_seq', 2, true);
+SELECT pg_catalog.setval('public.recetas_id_seq', 25, false);
 
 
 --
 -- Name: resultados_laboratorio_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.resultados_laboratorio_id_seq', 1, true);
+SELECT pg_catalog.setval('public.resultados_laboratorio_id_seq', 22, false);
 
 
 --
@@ -26062,5 +26310,5 @@ GRANT ALL ON SEQUENCE public.usuarios_id_seq TO rol_directivo;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict r5LnUALtzAIHshnSRBROEAczRVxmRkgKYG0pcsygZN7IVyVOzLybd8vB1wVlWZG
+\unrestrict uDB8DWoJJ9eWhFhDep4cAbDrSmxUkMFN5ln5U2BGLhrb9ilwe7RshiHugU1eizJ
 

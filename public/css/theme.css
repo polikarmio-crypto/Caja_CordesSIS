@@ -286,3 +286,112 @@ p, span, label, li {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+/* ══════════════════════════════════════════════════════════════
+   FIXES VISIBILIDAD CLARO/OSCURO — Correcciones críticas
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Código 2FA: visible en ambos temas ── */
+.twofa-code-display {
+    font-size: 1.15rem;
+    letter-spacing: 3px;
+    font-weight: 800;
+    margin-left: 6px;
+    color: var(--primary-dark) !important;
+    background: var(--bg-card);
+    padding: 2px 10px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-color);
+    display: inline-block;
+}
+
+/* En modo oscuro el código debe verse claro */
+[data-theme="dark"] .twofa-code-display {
+    color: var(--primary-light) !important;
+    background: rgba(0,122,94,0.15);
+}
+
+/* ── Input del código 2FA (centrado grande) — color correcto en ambos temas ── */
+.login-input-wrap input[name="code"] {
+    color: var(--text-main) !important;
+    background: var(--bg-input) !important;
+}
+
+/* ── Alertas de login: texto y elementos internos siempre visibles ── */
+.login-alert--success {
+    color: var(--success) !important;
+}
+.login-alert--success strong,
+.login-alert--success b,
+.login-alert--success span {
+    color: var(--text-main) !important;
+}
+
+.login-alert--error {
+    color: var(--danger) !important;
+}
+.login-alert--error strong,
+.login-alert--error b {
+    color: inherit !important;
+}
+
+/* ── Elementos strong, b — texto principal en ambos temas ── */
+strong, b {
+    color: var(--text-main);
+}
+
+/* ── Botón de accesibilidad flotante (texto siempre visible) ── */
+[style*="bottom: 20px"] button {
+    color: var(--primary-color) !important;
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ── group-title (sidebar accordion): texto legible en modo claro ── */
+.group-title {
+    color: var(--text-main) !important;
+}
+
+/* ── Sidebar: todos los textos de nav-link visibles en claro ── */
+[data-theme="light"] .sidebar nav a.nav-link {
+    color: var(--sidebar-text) !important;
+}
+
+/* ── Código en credenciales de login ── */
+.login-cred-item code {
+    color: var(--text-main) !important;
+}
+
+/* ── Etiquetas de formularios en login ── */
+.login-label {
+    color: var(--text-secondary) !important;
+}
+
+/* ── Títulos y subtítulos de login ── */
+.login-title,
+.login-brand-name {
+    color: var(--text-main) !important;
+}
+
+.login-subtitle,
+.login-brand-desc {
+    color: var(--text-secondary) !important;
+}
+
+/* ── Link de volver al login ── */
+.login-link {
+    color: var(--primary-color) !important;
+}
+
+/* ── Footer: texto siempre visible ── */
+.app-footer span,
+.app-footer b {
+    color: var(--text-secondary) !important;
+}
+
+/* ── Header: texto del usuario ── */
+.user-email,
+.user-role,
+.header-title {
+    color: var(--text-main) !important;
+}
