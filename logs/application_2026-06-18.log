@@ -11,3 +11,9 @@
 [2026-06-18 04:28:48] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [usuarios] Inicio de sesión exitoso con 2FA | {"usuario_id":"5001","modulo":"usuarios"}
 [2026-06-18 16:11:55] [INFO] [application] [user:guest] [ip:127.0.0.1] Auditoría: [usuarios] Generó código 2FA: 703833 | {"usuario_id":"5001","modulo":"usuarios"}
 [2026-06-18 16:12:09] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [usuarios] Inicio de sesión exitoso con 2FA | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 16:27:24] [INFO] [application] [user:guest] [ip:127.0.0.1] Auditoría: [usuarios] Generó código 2FA: 222349 | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 16:27:33] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [usuarios] Inicio de sesión exitoso con 2FA | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 16:28:48] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [sucursales] Baja Lógica Sucursal | {"usuario_id":"5001","modulo":"sucursales"}
+[2026-06-18 16:28:51] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [sucursales] Restaurar Sucursal | {"usuario_id":"5001","modulo":"sucursales"}
+[2026-06-18 18:11:43] [INFO] [application] [user:guest] [ip:127.0.0.1] Auditoría: [usuarios] Generó código 2FA: 160748 | {"usuario_id":"5001","modulo":"usuarios"}
+[2026-06-18 18:11:58] [INFO] [application] [user:5001] [ip:127.0.0.1] Auditoría: [usuarios] Inicio de sesión exitoso con 2FA | {"usuario_id":"5001","modulo":"usuarios"}
